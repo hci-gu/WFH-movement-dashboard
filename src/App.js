@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react'
+import { useRecoilState } from 'recoil'
+import { getDashboard } from './api'
+import { dashboardState } from './state'
 
 function App() {
+  const [dashboard, setDashboard] = useRecoilState(dashboardState)
+
+  useEffect(() => {
+    const run = async () => {
+      const _dashboard = await getDashboard()
+
+      setDashboard(_dashboard)
+    }
+    run()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <pre>{JSON.stringify(dashboard, null, 2)}</pre>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
