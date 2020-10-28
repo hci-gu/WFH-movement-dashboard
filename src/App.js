@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useRecoilState } from 'recoil'
-import { getDashboard } from './api'
-import { dashboardState } from './state'
+import { getDashboard, getUserRegistrations } from './api'
+import { dashboardState, userRegistrationsState } from './state'
 
 import Number from './components/Number'
+import RegistrationChart from './components/RegistrationChart'
 
 const Container = styled.div`
   margin: 0 auto;
@@ -30,13 +31,16 @@ const Grid = styled.div`
 `
 
 function App() {
-  const [dashboard, setDashboard] = useRecoilState(dashboardState)
+  const [, setDashboard] = useRecoilState(dashboardState)
+  const [, setUserRegistrations] = useRecoilState(userRegistrationsState)
 
   useEffect(() => {
     const run = async () => {
       const _dashboard = await getDashboard()
+      const _dates = await getUserRegistrations()
 
       setDashboard(_dashboard)
+      setUserRegistrations(_dates)
     }
     run()
   }, [])
@@ -44,6 +48,7 @@ function App() {
   return (
     <Container>
       <h1>WFH Movement stats</h1>
+      <RegistrationChart />
       <Grid>
         <Number selector="users" title="Users" />
         <Number selector="usersLastSevenDays" title="Users (last 7 days)" />
