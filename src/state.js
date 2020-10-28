@@ -25,7 +25,6 @@ export const usersByDay = selector({
   get: ({ get }) => {
     const usersDates = get(userRegistrationsState)
     const firstDate = usersDates[0]
-    const lastDate = usersDates[usersDates.length - 1]
 
     const usersForDay = usersDates.reduce((acc, date) => {
       const day = moment(date).format('YYYY-MM-DD')
@@ -38,7 +37,7 @@ export const usersByDay = selector({
     }, {})
 
     const days = Array.from({
-      length: moment(lastDate).diff(firstDate, 'days'),
+      length: moment().diff(firstDate, 'days') + 2,
     })
       .map((_, i) => moment(firstDate).add(i, 'days').format('YYYY-MM-DD'))
       .reduce((acc, date) => {
