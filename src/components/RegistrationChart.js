@@ -1,16 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import {
-  BarChart,
-  Bar,
-  Cell,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from 'recharts'
-import { useRecoilValue } from 'recoil'
-import { usersByDay } from '../state'
+import Chart from './Chart'
+import { usersByDay, usersForDay } from '../state'
 
 const Container = styled.div`
   width: 100%;
@@ -22,24 +13,37 @@ const Container = styled.div`
   justify-content: center;
 `
 
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+
+  > button {
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 4px;
+    padding: 4px 6px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+
+    margin-left: 10px;
+  }
+`
+
 const RegistrationChart = () => {
-  const dates = useRecoilValue(usersByDay)
+  const [day, setDay] = useState(null)
 
   return (
     <Container>
-      <h2>Users over time</h2>
-      <ResponsiveContainer>
-        <BarChart height={80} data={dates}>
-          <Bar dataKey="users">
-            {dates.map((_, index) => (
-              <Cell fill="#5B6D78" key={`cell-${index}`} />
-            ))}
-          </Bar>
-          <XAxis dataKey="date" />
-          <YAxis dataKey="users" />
-          <Tooltip />
-        </BarChart>
-      </ResponsiveContainer>
+      <Title>
+        {day ? <h2>Users for {day}</h2> : <h2>Users over time</h2>}
+        {day && <button onClick={() => setDay(null)}>╳</button>}
+      </Title>
+      <Chart
+        selector={day ? usersForDay : usersByDay}
+        value={day}
+        onClick={(date) => setDay(date)}
+      />
     </Container>
   )
 }

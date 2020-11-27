@@ -51,3 +51,35 @@ export const usersByDay = selector({
     }))
   },
 })
+
+export const usersForDay = selectorFamily({
+  key: 'users-for-day',
+  get: (day) => ({ get }) => {
+    const usersDates = get(userRegistrationsState)
+    console.log('usersDates', usersDates)
+
+    const usersForHour = usersDates
+      .filter((date) => moment(date).diff(moment(day), 'days') === 0)
+      .reduce((acc, date) => {
+        const hour = moment(date).format('HH')
+        if (!acc[hour]) {
+          acc[hour] = 1
+        } else {
+          acc[hour]++
+        }
+        return acc
+      }, {})
+    console.log(usersForHour)
+
+    const hours = Array.from({ length: 24 })
+      .map((_, i) => moment(day).add(i, 'hours').format('HH'))
+      .reduce((acc, hour) => {
+        return [
+          ...acc,
+          { date: hour, users: usersForHour[hour] ? usersForHour[hour] : 0 },
+        ]
+      }, [])
+    console.log(hours)
+    return hours
+  },
+})
