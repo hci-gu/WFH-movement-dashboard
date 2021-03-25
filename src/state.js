@@ -20,6 +20,16 @@ export const dashBoardValue = selectorFamily({
   },
 })
 
+export const dashBoardValueForApp = selectorFamily({
+  key: 'dashboard-value-for-app',
+  get: ({ app, key }) => ({ get }) => {
+    const dashboard = get(dashboardState)
+    console.log(dashboard, app, key)
+
+    return dashboard ? dashboard[app][key] : 0
+  },
+})
+
 export const userRegistrationsState = atom({
   key: 'user-registrations',
   default: [],

@@ -55,12 +55,6 @@ function App() {
         <Number selector="users" title="Users" />
         <Number selector="usersLastSevenDays" title="Users (last 7 days)" />
         <Number selector="usersToday" title="Users (today)" />
-        <Number selector="sessions" title="Sessions" />
-        <Number
-          selector="sessionsLastSevenDays"
-          title="Sessions (last 7 days)"
-        />
-        <Number selector="sessionsToday" title="Sessions (today)" />
       </Grid>
     </Container>
   )
