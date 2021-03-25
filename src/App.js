@@ -6,6 +6,7 @@ import { dashboardState, userRegistrationsState } from './state'
 
 import Number from './components/Number'
 import RegistrationChart from './components/RegistrationChart'
+import PeriodSelect from './components/PeriodSelect'
 
 const Container = styled.div`
   margin: 0 auto;
@@ -48,6 +49,7 @@ function App() {
   return (
     <Container>
       <h1>WFH Movement stats</h1>
+      <PeriodSelect />
       <RegistrationChart />
       <Grid>
         <Number selector="users" title="Users" />

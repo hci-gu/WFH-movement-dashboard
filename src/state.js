@@ -6,6 +6,11 @@ export const dashboardState = atom({
   default: null,
 })
 
+export const fromDateState = atom({
+  key: 'from-date',
+  default: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+})
+
 export const dashBoardValue = selectorFamily({
   key: 'dashboard-value',
   get: (key) => ({ get }) => {
@@ -23,31 +28,49 @@ export const userRegistrationsState = atom({
 export const usersByDay = selector({
   key: 'users-by-day',
   get: ({ get }) => {
-    const usersDates = get(userRegistrationsState)
-    const firstDate = usersDates[0]
+    const users = get(userRegistrationsState)
+    let firstDate = get(fromDateState)
+    if (!users.length) return []
+    if (!firstDate) {
+      firstDate = users[0].date
+    }
 
-    const usersForDay = usersDates.reduce((acc, date) => {
-      const day = moment(date).format('YYYY-MM-DD')
-      if (!acc[day]) {
-        acc[day] = 1
+    const apps = {
+      'WFH Movement': {},
+      'SFH Movement': {},
+    }
+
+    const usersForDay = users.reduce((acc, u) => {
+      const day = moment(u.date).format('YYYY-MM-DD')
+      const app = acc[u.app]
+
+      if (!app[day]) {
+        app[day] = 1
       } else {
-        acc[day]++
+        app[day]++
       }
       return acc
-    }, {})
+    }, apps)
 
     const days = Array.from({
       length: moment().diff(firstDate, 'days') + 2,
     })
       .map((_, i) => moment(firstDate).add(i, 'days').format('YYYY-MM-DD'))
       .reduce((acc, date) => {
-        acc[date] = usersForDay[date] ? usersForDay[date] : 0
+        acc[date] = {
+          'WFH Movement': usersForDay['WFH Movement'][date]
+            ? usersForDay['WFH Movement'][date]
+            : 0,
+          'SFH Movement': usersForDay['SFH Movement'][date]
+            ? usersForDay['SFH Movement'][date]
+            : 0,
+        }
         return acc
       }, {})
 
     return Object.keys(days).map((key) => ({
       date: key,
-      users: days[key],
+      ...days[key],
     }))
   },
 })
@@ -56,30 +79,43 @@ export const usersForDay = selectorFamily({
   key: 'users-for-day',
   get: (day) => ({ get }) => {
     const usersDates = get(userRegistrationsState)
-    console.log('usersDates', usersDates)
+
+    const apps = {
+      'WFH Movement': {},
+      'SFH Movement': {},
+    }
 
     const usersForHour = usersDates
-      .filter((date) => moment(date).diff(moment(day), 'days') === 0)
-      .reduce((acc, date) => {
-        const hour = moment(date).format('HH')
-        if (!acc[hour]) {
-          acc[hour] = 1
+      .filter(({ date }) => moment(date).diff(moment(day), 'days') === 0)
+      .reduce((acc, u) => {
+        const app = acc[u.app]
+        const hour = moment(u.date).format('HH')
+        if (!app[hour]) {
+          app[hour] = 1
         } else {
-          acc[hour]++
+          app[hour]++
         }
         return acc
-      }, {})
+      }, apps)
     console.log(usersForHour)
 
     const hours = Array.from({ length: 24 })
       .map((_, i) => moment(day).add(i, 'hours').format('HH'))
-      .reduce((acc, hour) => {
-        return [
-          ...acc,
-          { date: hour, users: usersForHour[hour] ? usersForHour[hour] : 0 },
-        ]
-      }, [])
-    console.log(hours)
-    return hours
+      .reduce((acc, date) => {
+        acc[date] = {
+          'WFH Movement': usersForHour['WFH Movement'][date]
+            ? usersForHour['WFH Movement'][date]
+            : 0,
+          'SFH Movement': usersForHour['SFH Movement'][date]
+            ? usersForHour['SFH Movement'][date]
+            : 0,
+        }
+        return acc
+      }, {})
+
+    return Object.keys(hours).map((key) => ({
+      date: key,
+      ...hours[key],
+    }))
   },
 })
