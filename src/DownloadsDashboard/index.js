@@ -44,7 +44,7 @@ function App() {
       setUserRegistrations(_dates)
     }
     run()
-  }, [])
+  }, [setDashboard, setUserRegistrations])
 
   return (
     <Container>
