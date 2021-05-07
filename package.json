@@ -14,7 +14,8 @@
     "react-spring": "^9.1.1",
     "recharts": "^2.0.9",
     "recoil": "^0.2.0",
-    "styled-components": "^5.2.3"
+    "styled-components": "^5.2.3",
+    "ttest": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
