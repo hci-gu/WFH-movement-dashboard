@@ -1,40 +1,28 @@
-import moment from 'moment'
 import ttest from 'ttest'
+import AnalysisWorker from './analysis.worker.js'
 
-const median = arr => arr.sort()[Math.floor(arr.length/2)]
-const mean = arr => arr.length === 0 ? 0 : arr.reduce((sum, value) => sum + value, 0) / arr.length
-
-const createBeforeAndAfterDays = (users, { monthsBefore = 3, monthsAfter = 3 } = {}) =>
-  users.map(user => {
-    const compareDate = user.compareDate
-    const days = user.days
-
-    const daysBefore = days
-      .filter(({ date }) => new Date(date) < new Date(compareDate) && moment(date).isAfter(moment(compareDate).subtract(monthsBefore, 'months')))
-    const daysAfter = days
-      .filter(({ date }) => new Date(date) >= new Date(compareDate) && moment(date).isBefore(moment(compareDate).add(monthsAfter, 'months')))
-
-      return {
-        ...user,
-        daysBefore,
-        daysAfter,
-      }
-  })
+const median = (arr) => arr.sort()[Math.floor(arr.length / 2)]
+const mean = (arr) =>
+  arr.length === 0 ? 0 : arr.reduce((sum, value) => sum + value, 0) / arr.length
 
 const analyse = (users, { useMedian = true } = {}) => {
-  const beforeAfter = users
-    .map(({daysBefore, daysAfter}) => {
-      const f = useMedian ? median : mean
-      return [
-        f(daysBefore.map(({ value }) => value)),
-        f(daysAfter.map(({ value }) => value)),
-      ]
-    })
+  const beforeAfter = users.map(({ daysBefore, daysAfter }) => {
+    const f = useMedian ? median : mean
+    return [
+      f(daysBefore.map(({ value }) => value)),
+      f(daysAfter.map(({ value }) => value)),
+    ]
+  })
 
-  if (beforeAfter.some(([a, b]) => Number.isNaN(a) || Number.isNaN(b) || a === undefined || b === undefined))
+  if (
+    beforeAfter.some(
+      ([a, b]) =>
+        Number.isNaN(a) || Number.isNaN(b) || a === undefined || b === undefined
+    )
+  )
     throw new Error('error in data')
 
-  const diffs = beforeAfter.map(([ before, after ]) => (after || 0) - before)
+  const diffs = beforeAfter.map(([before, after]) => (after || 0) - before)
 
   // manual calculation, left to ttest-package
   // const avgDiff = diffs.reduce((sum, diff) => sum + diff, 0) / medians.length
@@ -44,7 +32,6 @@ const analyse = (users, { useMedian = true } = {}) => {
 
   // const test = ttest(medians.map(([x]) => x), medians.map(([,x]) => x))
   const test = ttest(diffs)
-  console.log({ p: test.pValue(), testValue: test.testValue(), valid: test.valid(), freedom: test.freedom()}) // , conf: test.confidence()})
 
   return {
     // avgDiff, sdDiff, t,
@@ -57,7 +44,99 @@ const analyse = (users, { useMedian = true } = {}) => {
   }
 }
 
-export {
-  analyse,
-  createBeforeAndAfterDays,
+function createGroups(arr, numGroups) {
+  const perGroup = Math.ceil(arr.length / numGroups)
+  return new Array(numGroups)
+    .fill('')
+    .map((_, i) => arr.slice(i * perGroup, (i + 1) * perGroup))
 }
+
+const runWorker = (users) => {
+  return new Promise((resolve) => {
+    const worker = new AnalysisWorker()
+    worker.addEventListener('message', (e) => {
+      worker.terminate()
+      resolve(e.data)
+    })
+
+    worker.postMessage({ users })
+  })
+}
+
+const runAnalysis = (users, workers = 8) => {
+  return new Promise(async (resolve) => {
+    const filteredUsers = users.filter(
+      ({ compareDate, days }) => compareDate && days && days.length > 0
+    )
+    const userChunks = createGroups(filteredUsers, workers)
+    const processedChunks = await Promise.all(
+      userChunks.map((chunk) => runWorker(chunk))
+    )
+    const dataUsers = processedChunks
+      .flat()
+      .filter(
+        ({ daysBefore, daysAfter }) =>
+          daysBefore.filter(({ value }) => value > 0).length /
+            daysBefore.length >
+          0.05
+      )
+      .filter(
+        ({ daysBefore, daysAfter }) =>
+          daysAfter.filter(({ value }) => value > 0).length / daysAfter.length >
+          0.05
+      )
+
+    const ages = [
+      '18-24',
+      '25-34',
+      '35-44',
+      '45-54',
+      '55-64',
+      '65-74',
+      '75-84',
+      // '85-94',
+      // '95-104',
+    ]
+    const all = {
+      gender: 'Any',
+      ageRange: 'Any',
+      ...analyse(dataUsers),
+    }
+    const allGenders = ages.map((age) => ({
+      gender: 'Any',
+      ageRange: age,
+      ...analyse(dataUsers.filter(({ ageRange }) => ageRange === age)),
+    }))
+    const allMale = {
+      gender: 'Male',
+      ageRange: 'all',
+      ...analyse(dataUsers.filter(({ gender }) => gender === 'Male')),
+    }
+    const male = ages.map((age) => ({
+      gender: 'Male',
+      ageRange: age,
+      ...analyse(
+        dataUsers.filter(
+          ({ ageRange, gender }) => ageRange === age && gender === 'Male'
+        )
+      ),
+    }))
+    const allFemale = {
+      gender: 'Female',
+      ageRange: 'all',
+      ...analyse(dataUsers.filter(({ gender }) => gender === 'Female')),
+    }
+    const female = ages.map((age) => ({
+      gender: 'Female',
+      ageRange: age,
+      ...analyse(
+        dataUsers.filter(
+          ({ ageRange, gender }) => ageRange === age && gender === 'Female'
+        )
+      ),
+    }))
+    resolve([all, ...allGenders, allMale, ...male, allFemale, ...female])
+  })
+}
+
+export { runAnalysis }

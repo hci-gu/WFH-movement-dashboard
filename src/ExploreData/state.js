@@ -1,4 +1,4 @@
-import { atom, selector, selectorFamily } from 'recoil'
+import { atom, selector } from 'recoil'
 import moment from 'moment'
 
 /*
@@ -40,6 +40,11 @@ export const filtersAtom = atom({
     ageRange: null,
     gender: null,
   },
+})
+
+export const analysisAtom = atom({
+  key: 'analysis',
+  default: [],
 })
 
 export const datesAtom = atom({
