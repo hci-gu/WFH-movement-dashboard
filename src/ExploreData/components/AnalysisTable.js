@@ -57,6 +57,7 @@ const AnalysisTable = () => {
       size="small"
       dataSource={analysis.map((row, i) => ({ ...row, key: `Row_${i}` }))}
       columns={columns}
+      onRow={(v) => ({ style: { fontWeight: v.valid ? 400 : 700 } })}
     ></Table>
   )
 }

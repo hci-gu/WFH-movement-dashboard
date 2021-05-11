@@ -4,7 +4,7 @@ const ctx = self
 
 const createBeforeAndAfterDays = (
   users,
-  { monthsBefore = 3, monthsAfter = 3 } = {}
+  { monthsBefore = 3, monthsAfter = 3, includeWeekends = true } = {}
 ) =>
   users.map((user) => {
     const compareDate = user.compareDate
@@ -31,8 +31,7 @@ const createBeforeAndAfterDays = (
   })
 
 ctx.addEventListener('message', (event) => {
-  console.log('worker got data', event.data.length)
-  const { users, params } = event.data
+  const { users, settings } = event.data
 
-  ctx.postMessage(createBeforeAndAfterDays(users, params))
+  ctx.postMessage(createBeforeAndAfterDays(users, settings))
 })

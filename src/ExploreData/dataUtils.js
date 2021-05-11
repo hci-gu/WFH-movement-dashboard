@@ -51,7 +51,7 @@ function createGroups(arr, numGroups) {
     .map((_, i) => arr.slice(i * perGroup, (i + 1) * perGroup))
 }
 
-const runWorker = (users) => {
+const runWorker = (users, settings) => {
   return new Promise((resolve) => {
     const worker = new AnalysisWorker()
     worker.addEventListener('message', (e) => {
@@ -59,18 +59,18 @@ const runWorker = (users) => {
       resolve(e.data)
     })
 
-    worker.postMessage({ users })
+    worker.postMessage({ users, settings })
   })
 }
 
-const runAnalysis = (users, workers = 8) => {
+const runAnalysis = (users, settings) => {
   return new Promise(async (resolve) => {
     const filteredUsers = users.filter(
       ({ compareDate, days }) => compareDate && days && days.length > 0
     )
-    const userChunks = createGroups(filteredUsers, workers)
+    const userChunks = createGroups(filteredUsers, settings.workers)
     const processedChunks = await Promise.all(
-      userChunks.map((chunk) => runWorker(chunk))
+      userChunks.map((chunk) => runWorker(chunk, settings))
     )
     const dataUsers = processedChunks
       .flat()
@@ -78,12 +78,12 @@ const runAnalysis = (users, workers = 8) => {
         ({ daysBefore, daysAfter }) =>
           daysBefore.filter(({ value }) => value > 0).length /
             daysBefore.length >
-          0.05
+          1 - settings.maxMissingDaysBefore
       )
       .filter(
         ({ daysBefore, daysAfter }) =>
           daysAfter.filter(({ value }) => value > 0).length / daysAfter.length >
-          0.05
+          1 - settings.maxMissingDaysAfter
       )
 
     const ages = [

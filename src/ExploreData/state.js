@@ -42,6 +42,18 @@ export const filtersAtom = atom({
   },
 })
 
+export const analysisSettingsAtom = atom({
+  key: 'analysis-settings',
+  default: {
+    includeWeekends: true,
+    monthsBefore: 3,
+    monthsAfter: 3,
+    maxMissingDaysBefore: 0.05,
+    maxMissingDaysAfter: 0.05,
+    workers: 8,
+  },
+})
+
 export const analysisAtom = atom({
   key: 'analysis',
   default: [],
