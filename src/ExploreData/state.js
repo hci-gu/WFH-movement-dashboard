@@ -34,6 +34,16 @@ export const usersAtom = atom({
   default: [],
 })
 
+export const dataUsersAtom = atom({
+  key: 'data-users',
+  default: [],
+})
+
+export const userTableFilterAtom = atom({
+  key: 'user-table-filter',
+  default: [],
+})
+
 export const filtersAtom = atom({
   key: 'filters',
   default: {
@@ -45,6 +55,7 @@ export const filtersAtom = atom({
 export const analysisSettingsAtom = atom({
   key: 'analysis-settings',
   default: {
+    useMedian: true,
     includeWeekends: true,
     monthsBefore: 3,
     monthsAfter: 3,

@@ -1,9 +1,10 @@
-import React from 'react'
-import { Table } from 'antd'
-import { useRecoilValue } from 'recoil'
-import { usersSelector } from '../state'
+import React, { useState } from 'react'
+import { Input, Table, Tag } from 'antd'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { dataUsersAtom, usersSelector, userTableFilterAtom } from '../state'
 import User from './User'
 import moment from 'moment'
+import styled from 'styled-components'
 
 const columns = [
   {
@@ -52,19 +53,65 @@ const columns = [
   },
 ]
 
-const UserTable = () => {
+const FilterContainer = styled.div`
+  display: flex;
+  > * {
+    margin-right: 10px;
+  }
+`
+
+const UserTable = ({ useAnalysis }) => {
   const users = useRecoilValue(usersSelector)
+  const [userIds, setUserTableFilter] = useRecoilState(userTableFilterAtom)
+  const dataUsers = useRecoilValue(dataUsersAtom)
+  const [userIdInputValue, setUserIdInputValue] = useState('')
+
+  const dataSource = useAnalysis ? dataUsers : users
+
+  const onRemoveUserIdFilter = (e, idToRemove) => {
+    e.preventDefault()
+    setUserTableFilter((ids) => ids.filter((id) => id !== idToRemove))
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    setUserTableFilter((ids) => [...ids, userIdInputValue])
+    setUserIdInputValue('')
+  }
 
   return (
-    <Table
-      style={{ width: '100%' }}
-      dataSource={users.map((u, i) => ({ ...u, key: `Table_user_${i}` }))}
-      columns={columns}
-      expandable={{
-        expandedRowRender: (u) => <User user={u} />,
-        // rowExpandable: (record) => record.name !== 'Not Expandable',
-      }}
-    ></Table>
+    <>
+      <FilterContainer>
+        <form onSubmit={(e) => onSubmit(e)}>
+          <Input
+            style={{ width: 450 }}
+            placeholder="UserID filter ( does not affect analysis, just to find users )"
+            value={userIdInputValue}
+            onChange={(e) => setUserIdInputValue(e.target.value)}
+          ></Input>
+        </form>
+        {userIds.map((id) => (
+          <Tag
+            closable
+            onClose={(e) => onRemoveUserIdFilter(e, id)}
+            key={id}
+            style={{ height: 22 }}
+          >
+            <span>{id}</span>
+          </Tag>
+        ))}
+      </FilterContainer>
+      <Table
+        style={{ width: '100%' }}
+        dataSource={dataSource
+          .filter((u) => userIds.length === 0 || userIds.indexOf(u._id) !== -1)
+          .map((u, i) => ({ ...u, key: `Table_user_${i}` }))}
+        columns={columns}
+        expandable={{
+          expandedRowRender: (u) => <User user={u} />,
+        }}
+      ></Table>
+    </>
   )
 }
 

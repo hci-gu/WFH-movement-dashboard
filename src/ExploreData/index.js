@@ -4,13 +4,19 @@ import styled from 'styled-components'
 import { useUsers } from './api'
 import Filter from './components/Filter'
 import PeriodInput from './components/PeriodInput'
-import { analysisAtom, analysisSettingsAtom, usersSelector } from './state'
+import {
+  analysisAtom,
+  analysisSettingsAtom,
+  dataUsersAtom,
+  usersSelector,
+} from './state'
 
 import { runAnalysis } from './dataUtils'
 import UserTable from './components/UserTable'
 import AnalysisTable from './components/AnalysisTable'
 import { Button } from 'antd'
 import AnalysisSettings from './components/AnalysisSettings'
+import EstimationPlot from './components/EstimationPlot'
 
 const Container = styled.div`
   width: 100%;
@@ -41,6 +47,7 @@ const Filters = styled.div`
 
 function App() {
   const allUsers = useUsers()
+  const [dataUsers, setDataUsers] = useRecoilState(dataUsersAtom)
   const users = useRecoilValue(usersSelector)
   const [loading, setLoading] = useState(false)
   const analysisSettings = useRecoilValue(analysisSettingsAtom)
@@ -49,8 +56,12 @@ function App() {
   const dataAnalysis = () => {
     if (loading) return
     const run = async () => {
-      const analysedRows = await runAnalysis(users, analysisSettings)
+      const [dataUsers, analysedRows] = await runAnalysis(
+        users,
+        analysisSettings
+      )
       setAnalysis(analysedRows)
+      setDataUsers(dataUsers)
       setLoading(false)
     }
     setLoading(true)
@@ -70,14 +81,20 @@ function App() {
         <PeriodInput />
 
         <AnalysisSettings />
+        <Button
+          onClick={dataAnalysis}
+          disabled={users.length === 0}
+          style={{ marginTop: 10 }}
+        >
+          {loading ? 'analyzing..' : 'analyze'}
+        </Button>
       </Filters>
       <div>
         <h1>WFH Movement data {users.length === 0 && '- loading...'}</h1>
-        <UserTable />
-        <Button onClick={dataAnalysis} disabled={users.length === 0}>
-          {loading ? 'analyzing..' : 'analyze'}
-        </Button>
+        <UserTable useAnalysis={dataUsers.length > 0} />
+        <h1>Analysis {`- ${dataUsers.length} users`}</h1>
         <AnalysisTable />
+        <EstimationPlot />
       </div>
     </Container>
   )

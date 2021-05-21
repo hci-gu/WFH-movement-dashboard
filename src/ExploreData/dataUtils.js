@@ -1,17 +1,12 @@
 import ttest from 'ttest'
 import AnalysisWorker from './analysis.worker.js'
 
-const median = (arr) => arr.sort()[Math.floor(arr.length / 2)]
 const mean = (arr) =>
   arr.length === 0 ? 0 : arr.reduce((sum, value) => sum + value, 0) / arr.length
 
-const analyse = (users, { useMedian = true } = {}) => {
-  const beforeAfter = users.map(({ daysBefore, daysAfter }) => {
-    const f = useMedian ? median : mean
-    return [
-      f(daysBefore.map(({ value }) => value)),
-      f(daysAfter.map(({ value }) => value)),
-    ]
+const analyse = (users) => {
+  const beforeAfter = users.map(({ stepsBefore, stepsAfter }) => {
+    return [stepsBefore, stepsAfter]
   })
 
   if (
@@ -135,7 +130,11 @@ const runAnalysis = (users, settings) => {
         )
       ),
     }))
-    resolve([all, ...allGenders, allMale, ...male, allFemale, ...female])
+
+    resolve([
+      dataUsers,
+      [all, ...allGenders, allMale, ...male, allFemale, ...female],
+    ])
   })
 }
 

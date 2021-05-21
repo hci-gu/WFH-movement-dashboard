@@ -17,14 +17,6 @@ const Row = styled.div`
 `
 
 const AnalysisSettings = () => {
-  /*
-    includeWeekends: true,
-    monthsBefore: 3,
-    monthsAfter: 3,
-    maxMissingDaysBefore: 0.05,
-    maxMissingDaysAfter: 0.05,
-    workers: 16,
-  */
   const [settings, setSettings] = useRecoilState(analysisSettingsAtom)
 
   const onChange = (key, value) => {
@@ -75,8 +67,17 @@ const AnalysisSettings = () => {
       <Row>
         <span>Include weekends</span>
         <Checkbox
-          value={settings.includeWeekends}
-          onChange={(value) => onChange('includeWeekends', value)}
+          checked={settings.includeWeekends}
+          onChange={() =>
+            onChange('includeWeekends', !settings.includeWeekends)
+          }
+        />
+      </Row>
+      <Row>
+        <span>Use median</span>
+        <Checkbox
+          checked={settings.useMedian}
+          onChange={() => onChange('useMedian', !settings.useMedian)}
         />
       </Row>
     </Container>
