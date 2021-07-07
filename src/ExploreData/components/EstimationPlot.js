@@ -10,9 +10,12 @@ const EstimationPlot = () => {
   var config = {
     width: 1250,
     height: 800,
-    data: dataUsers,
+    data: dataUsers
+      .filter(({ stepsDifference }) => stepsDifference < 2)
+      .filter(({ stepsEstimate }) => stepsEstimate !== 0)
+      .map((u) => ({ ...u, change: u.change })),
     xField: 'stepsEstimate',
-    yField: 'stepsDifference',
+    yField: 'change',
     shape: 'circle',
     colorField: 'ageRange',
     size: 4,

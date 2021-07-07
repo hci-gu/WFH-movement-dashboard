@@ -17,6 +17,7 @@ import AnalysisTable from './components/AnalysisTable'
 import { Button } from 'antd'
 import AnalysisSettings from './components/AnalysisSettings'
 import EstimationPlot from './components/EstimationPlot'
+import PieChart from './components/PieChart'
 
 const Container = styled.div`
   width: 100%;
@@ -93,6 +94,7 @@ function App() {
         <h1>WFH Movement data {users.length === 0 && '- loading...'}</h1>
         <UserTable useAnalysis={dataUsers.length > 0} />
         <h1>Analysis {`- ${dataUsers.length} users`}</h1>
+        <PieChart />
         <AnalysisTable />
         <EstimationPlot />
       </div>

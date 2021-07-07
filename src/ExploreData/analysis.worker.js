@@ -11,6 +11,14 @@ const isWeekend = (date) => {
   return day === 6 || day === 0
 }
 
+const userEstimatedWrong = (estimate, change) => {
+  return (estimate > 0 && change < 0) || (estimate < 0 && change > 0)
+}
+
+const getPercentageChange = (before, after) => {
+  return (after - before) / before
+}
+
 const createBeforeAndAfterDays = (
   users,
   {
@@ -42,6 +50,7 @@ const createBeforeAndAfterDays = (
     )
     const stepsBefore = f(daysBefore.map(({ value }) => value))
     const stepsAfter = f(daysAfter.map(({ value }) => value))
+    const change = getPercentageChange(stepsBefore, stepsAfter)
 
     return {
       ...user,
@@ -50,6 +59,8 @@ const createBeforeAndAfterDays = (
       stepsBefore,
       stepsAfter,
       stepsDifference: stepsAfter / stepsBefore - 1,
+      change,
+      estimatedWrong: userEstimatedWrong(user.stepsEstimate, change),
     }
   })
 }

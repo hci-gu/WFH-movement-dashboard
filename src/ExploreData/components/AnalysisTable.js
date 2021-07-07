@@ -44,7 +44,15 @@ const columns = [
   {
     title: 'Diff',
     dataIndex: 'diff',
-    render: (_, v) => <span>{(v.before - v.after).toFixed(2)}</span>,
+    render: (_, v) => {
+      const diff = v.after - v.before
+      const percent = Math.abs(1 - v.after / v.before) * 100
+      return (
+        <span>
+          {diff.toFixed(2)} ({percent.toFixed(2)}%)
+        </span>
+      )
+    },
   },
 ]
 
