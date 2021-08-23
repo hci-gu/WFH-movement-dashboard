@@ -79,6 +79,8 @@ function App() {
         <h1>Filters</h1>
         <Filter dataKey="ageRange" />
         <Filter dataKey="gender" />
+        <Filter dataKey="country" />
+        <Filter dataKey="appName" />
         <PeriodInput />
 
         <AnalysisSettings />

@@ -23,13 +23,18 @@ const getAllUsers = async (users = [], offset = 0) => {
   return getAllUsers([...users, ...response.data], offset + 1)
 }
 
+const mapUser = (u) => ({
+  ...u,
+  appName: u.appName ? u.appName : 'WFH Movement',
+})
+
 export const useUsers = () => {
   const [users, setUsers] = useRecoilState(usersAtom)
 
   useEffect(() => {
     const getUsers = async () => {
       const users = await getAllUsers()
-      setUsers(users)
+      setUsers(users.map(mapUser))
     }
     getUsers()
   }, [setUsers])

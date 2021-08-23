@@ -49,6 +49,8 @@ export const filtersAtom = atom({
   default: {
     ageRange: null,
     gender: null,
+    country: null,
+    appName: null,
   },
 })
 
@@ -91,6 +93,9 @@ export const usersSelector = selector({
       .filter((u) => {
         return Object.keys(filters).every((key) => {
           if (filters[key]) {
+            if (key === 'country') {
+              return u[key] === filters[key] || u[key] === undefined
+            }
             return u[key] === filters[key]
           }
           return true
@@ -110,6 +115,21 @@ export const usersSelector = selector({
 
         return value > dates.beforePeriod.value
       })
+  },
+})
+
+export const userCountriesSelector = selector({
+  key: 'user-countries',
+  get: ({ get }) => {
+    const users = get(usersAtom)
+
+    return users.reduce((countries, user) => {
+      if (user.country && !countries.find((c) => user.country === c)) {
+        countries.push(user.country)
+      }
+
+      return countries
+    }, [])
   },
 })
 
