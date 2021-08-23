@@ -61,6 +61,9 @@ const createBeforeAndAfterDays = (
       stepsDifference: stepsAfter / stepsBefore - 1,
       change,
       estimatedWrong: userEstimatedWrong(user.stepsEstimate, change),
+      totalSteps: days.reduce((acc, curr) => {
+        return acc + curr.value
+      }, 0),
     }
   })
 }
