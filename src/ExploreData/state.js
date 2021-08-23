@@ -1,4 +1,4 @@
-import { atom, selector, selectorFamily } from 'recoil'
+import { atom, selector } from 'recoil'
 import moment from 'moment'
 
 /*
@@ -34,12 +34,40 @@ export const usersAtom = atom({
   default: [],
 })
 
+export const dataUsersAtom = atom({
+  key: 'data-users',
+  default: [],
+})
+
+export const userTableFilterAtom = atom({
+  key: 'user-table-filter',
+  default: [],
+})
+
 export const filtersAtom = atom({
   key: 'filters',
   default: {
     ageRange: null,
     gender: null,
   },
+})
+
+export const analysisSettingsAtom = atom({
+  key: 'analysis-settings',
+  default: {
+    useMedian: true,
+    includeWeekends: true,
+    monthsBefore: 3,
+    monthsAfter: 3,
+    maxMissingDaysBefore: 0.05,
+    maxMissingDaysAfter: 0.05,
+    workers: 8,
+  },
+})
+
+export const analysisAtom = atom({
+  key: 'analysis',
+  default: [],
 })
 
 export const datesAtom = atom({
