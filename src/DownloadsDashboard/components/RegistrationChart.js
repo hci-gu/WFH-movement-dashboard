@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import Chart from './Chart'
-import { usersByDay, usersForDay } from '../state'
+import { usersByDay, usersByWeek, usersForDay } from '../state'
 
 const Container = styled.div`
   width: 100%;
-  height: 300px;
+  height: 500px;
 
   display: flex;
   flex-direction: column;
@@ -40,7 +40,7 @@ const RegistrationChart = () => {
         {day && <button onClick={() => setDay(null)}>╳</button>}
       </Title>
       <Chart
-        selector={day ? usersForDay : usersByDay}
+        selector={day ? usersForDay : usersByWeek}
         value={day}
         onClick={(date) => setDay(date)}
       />

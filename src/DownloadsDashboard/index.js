@@ -7,6 +7,7 @@ import { dashboardState, userRegistrationsState } from './state'
 import Number from './components/Number'
 import RegistrationChart from './components/RegistrationChart'
 import PeriodSelect from './components/PeriodSelect'
+import UnitSelect from './components/UnitSelect'
 
 const Container = styled.div`
   margin: 0 auto;
@@ -31,6 +32,15 @@ const Grid = styled.div`
   grid-gap: 15px;
 `
 
+const SelectContainer = styled.div`
+  display: flex;
+  align-self: flex-end;
+
+  > * {
+    margin-left: 10px;
+  }
+`
+
 function App() {
   const [, setDashboard] = useRecoilState(dashboardState)
   const [, setUserRegistrations] = useRecoilState(userRegistrationsState)
@@ -49,7 +59,10 @@ function App() {
   return (
     <Container>
       <h1>WFH Movement stats</h1>
-      <PeriodSelect />
+      <SelectContainer>
+        <PeriodSelect />
+        <UnitSelect />
+      </SelectContainer>
       <RegistrationChart />
       <Grid>
         <Number selector="users" title="Users" />
