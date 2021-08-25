@@ -44,6 +44,12 @@ export const userTableFilterAtom = atom({
   default: [],
 })
 
+export const widgetAtom = atom({
+  key: 'widget-to-display',
+  // default: 'AnalysisTable',
+  default: 'AgeGroups',
+})
+
 export const filtersAtom = atom({
   key: 'filters',
   default: {
@@ -58,7 +64,7 @@ export const analysisSettingsAtom = atom({
   key: 'analysis-settings',
   default: {
     useMedian: true,
-    includeWeekends: true,
+    includeWeekends: false,
     monthsBefore: 3,
     monthsAfter: 3,
     maxMissingDaysBefore: 0.05,

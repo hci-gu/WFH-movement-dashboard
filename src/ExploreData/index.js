@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { Button } from 'antd'
 import styled from 'styled-components'
 import { useUsers } from './api'
 import Filter from './components/Filter'
@@ -9,15 +10,21 @@ import {
   analysisSettingsAtom,
   dataUsersAtom,
   usersSelector,
+  widgetAtom,
 } from './state'
 
 import { runAnalysis } from './dataUtils'
 import UserTable from './components/UserTable'
 import AnalysisTable from './components/AnalysisTable'
-import { Button } from 'antd'
 import AnalysisSettings from './components/AnalysisSettings'
-import EstimationPlot from './components/EstimationPlot'
-import PieChart from './components/PieChart'
+import WidgetSelect from './components/WidgetSelect'
+import AmountHeader from './components/AmountHeader'
+
+import AgeGroups from './components/charts/AgeGroups'
+import EstimationPlot from './components/charts/EstimationPlot'
+import EstimationPieChart from './components/charts/EstimationPieChart'
+import WFHDays from './components/charts/WFHDays'
+import GenderPieChart from './components/charts/GenderPieChart'
 
 const Container = styled.div`
   width: 100%;
@@ -45,6 +52,43 @@ const Filters = styled.div`
     margin-top: 16px;
   }
 `
+
+const TitleAndSelect = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+
+  > h1 {
+    width: 100%;
+    margin: 0;
+  }
+`
+
+function WidgetSelector({ dataUsers, allUsers }) {
+  const [activeWidget] = useRecoilState(widgetAtom)
+
+  switch (activeWidget) {
+    case 'AnalysisTable':
+      return <AnalysisTable />
+    case 'UserTable':
+      return <UserTable useAnalysis={dataUsers.length > 0} />
+    case 'WFHDays':
+      return <WFHDays />
+    case 'EstimationPieChart':
+      return <EstimationPieChart />
+    case 'GenderPieChart':
+      return (
+        <GenderPieChart users={dataUsers.length > 0 ? dataUsers : allUsers} />
+      )
+    case 'EstimationPlot':
+      return <EstimationPlot />
+    case 'AgeGroups':
+      return <AgeGroups users={dataUsers.length > 0 ? dataUsers : allUsers} />
+    default:
+      return null
+  }
+}
 
 function App() {
   const allUsers = useUsers()
@@ -93,12 +137,11 @@ function App() {
         </Button>
       </Filters>
       <div>
-        <h1>WFH Movement data {users.length === 0 && '- loading...'}</h1>
-        <UserTable useAnalysis={dataUsers.length > 0} />
-        <h1>Analysis {`- ${dataUsers.length} users`}</h1>
-        <PieChart />
-        <AnalysisTable />
-        <EstimationPlot />
+        <TitleAndSelect>
+          <AmountHeader dataUsers={dataUsers} allUsers={allUsers} />
+          <WidgetSelect />
+        </TitleAndSelect>
+        <WidgetSelector dataUsers={dataUsers} allUsers={allUsers} />
       </div>
     </Container>
   )

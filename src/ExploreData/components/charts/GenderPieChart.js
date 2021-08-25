@@ -1,15 +1,11 @@
 import React from 'react'
 import { Pie } from '@ant-design/charts'
-import { useRecoilValue } from 'recoil'
-import { dataUsersAtom } from '../state'
 
-const PieChart = () => {
-  const dataUsers = useRecoilValue(dataUsersAtom)
-  console.log(dataUsers)
-  const data = dataUsers
-    .filter(({ stepsEstimate }) => stepsEstimate !== 0)
-    .reduce((acc, { estimatedWrong }) => {
-      const key = estimatedWrong.toString()
+const GenderPieChart = ({ users }) => {
+  const data = users
+    .filter((u) => !!u.gender)
+    .reduce((acc, { gender }) => {
+      const key = gender.toLowerCase()
       if (acc[key]) {
         acc[key]++
       } else {
@@ -22,11 +18,11 @@ const PieChart = () => {
     appendPadding: 10,
     radius: 0.9,
     data: Object.keys(data).map((key) => ({
-      estimatedWrong: key,
+      gender: key,
       value: data[key],
     })),
     angleField: 'value',
-    colorField: 'estimatedWrong',
+    colorField: 'gender',
     label: {
       type: 'inner',
       offset: '-30%',
@@ -43,4 +39,4 @@ const PieChart = () => {
   return <Pie {...config} />
 }
 
-export default PieChart
+export default GenderPieChart

@@ -1,6 +1,57 @@
 import ttest from 'ttest'
 import AnalysisWorker from './analysis.worker.js'
 
+// values|result [[x,y]...]
+export function findLineByLeastSquares(values) {
+  let sum_x = 0
+  let sum_y = 0
+  let sum_xy = 0
+  let sum_xx = 0
+  let count = 0
+
+  /*
+   * We'll use those variables for faster read/write access.
+   */
+  let x = 0
+  let y = 0
+
+  /*
+   * Calculate the sum for each of the parts necessary.
+   */
+  for (let v = 0; v < values.length; v++) {
+    x = values[v][0]
+    y = values[v][1]
+    sum_x += x
+    sum_y += y
+    sum_xx += x * x
+    sum_xy += x * y
+    count++
+  }
+
+  /*
+   * Calculate m and b for the formular:
+   * y = x * m + b
+   */
+  const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x)
+  const b = sum_y / count - (m * sum_x) / count
+
+  /*
+   * We will make the x and y result line now
+   */
+  const result = []
+
+  for (let v = 0; v < values.length; v++) {
+    x = values[v][0]
+    y = x * m + b
+    result.push([x, y])
+  }
+
+  return {
+    slope: m,
+    values: result,
+  }
+}
+
 const mean = (arr) =>
   arr.length === 0 ? 0 : arr.reduce((sum, value) => sum + value, 0) / arr.length
 

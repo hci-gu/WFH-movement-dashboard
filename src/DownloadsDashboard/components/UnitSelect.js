@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Select } from 'antd'
 import { useRecoilState } from 'recoil'
-import { fromDateState, unitState } from '../state'
+import { unitState } from '../state'
 
 const { Option } = Select
 

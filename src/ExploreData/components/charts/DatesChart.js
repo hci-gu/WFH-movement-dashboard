@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Area } from '@ant-design/charts'
 import { useRecoilValue } from 'recoil'
-import { userDatesSelector } from '../state'
+import { userDatesSelector } from '../../state'
 
 const DatesChart = () => {
   const data = useRecoilValue(userDatesSelector)
