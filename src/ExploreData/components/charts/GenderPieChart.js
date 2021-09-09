@@ -1,7 +1,8 @@
 import React from 'react'
 import { Pie } from '@ant-design/charts'
+import theme from '../../../shared/theme'
 
-const GenderPieChart = ({ users }) => {
+const GenderPieChart = ({ users, onReady }) => {
   const data = users
     .filter((u) => !!u.gender)
     .reduce((acc, { gender }) => {
@@ -15,6 +16,7 @@ const GenderPieChart = ({ users }) => {
     }, {})
 
   var config = {
+    theme,
     appendPadding: 10,
     radius: 0.9,
     data: Object.keys(data).map((key) => ({
@@ -26,7 +28,7 @@ const GenderPieChart = ({ users }) => {
     label: {
       type: 'inner',
       offset: '-30%',
-      content: function content(_ref) {
+      content: (_ref) => {
         var percent = _ref.percent.toFixed(3)
         return ''.concat(percent * 100, '%')
       },
@@ -36,7 +38,7 @@ const GenderPieChart = ({ users }) => {
       },
     },
   }
-  return <Pie {...config} />
+  return <Pie {...config} onReady={onReady} />
 }
 
 export default GenderPieChart

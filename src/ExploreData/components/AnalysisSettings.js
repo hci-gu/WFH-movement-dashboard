@@ -1,8 +1,9 @@
-import { Checkbox, InputNumber } from 'antd'
+import { Checkbox, DatePicker, InputNumber } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { useRecoilState } from 'recoil'
 import { analysisSettingsAtom } from '../state'
+import moment from 'moment'
 
 const Container = styled.div`
   display: flex;
@@ -78,6 +79,14 @@ const AnalysisSettings = () => {
         <Checkbox
           checked={settings.useMedian}
           onChange={() => onChange('useMedian', !settings.useMedian)}
+        />
+      </Row>
+      <Row>
+        <span>Fixed WFH date</span>
+        <DatePicker
+          value={settings.fixedWFHDate ? moment(settings.fixedWFHDate) : null}
+          defaultPickerValue={moment('2020-03-16')}
+          onChange={(val) => onChange('fixedWFHDate', moment(val).valueOf())}
         />
       </Row>
     </Container>

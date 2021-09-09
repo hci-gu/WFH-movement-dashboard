@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Area } from '@ant-design/charts'
 import { useRecoilValue } from 'recoil'
 import { userDatesSelector } from '../../state'
+import theme from '../../../shared/theme'
 
-const DatesChart = () => {
+const DatesChart = ({ onReady }) => {
   const data = useRecoilValue(userDatesSelector)
   var config = {
+    theme,
     width: 1250,
     height: 200,
     data,
@@ -14,7 +16,7 @@ const DatesChart = () => {
     seriesField: 'type',
   }
   console.log(data)
-  return <Area {...config} />
+  return <Area {...config} onReady={onReady} />
 }
 
 export default DatesChart

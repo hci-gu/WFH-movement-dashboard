@@ -1,5 +1,42 @@
 import ttest from 'ttest'
 import AnalysisWorker from './analysis.worker.js'
+import Papa from 'papaparse'
+
+export const downloadAsCsv = (rows, columns) => {
+  let filename = 'export.csv'
+
+  let csv = Papa.unparse({ data: rows, fields: columns, dynamicTyping: true })
+  if (csv == null) return
+
+  var blob = new Blob([csv])
+  if (window.navigator.msSaveOrOpenBlob)
+    // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+    window.navigator.msSaveBlob(blob, filename)
+  else {
+    var a = window.document.createElement('a')
+    a.href = window.URL.createObjectURL(blob, { type: 'text/plain' })
+    a.download = filename
+    document.body.appendChild(a)
+    a.click() // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+    document.body.removeChild(a)
+  }
+}
+
+export const downloadJson = (data) => {
+  let filename = 'export.json'
+
+  var blob = new Blob([JSON.stringify(data)])
+  if (window.navigator.msSaveOrOpenBlob)
+    window.navigator.msSaveBlob(blob, filename)
+  else {
+    var a = window.document.createElement('a')
+    a.href = window.URL.createObjectURL(blob, { type: 'text/plain' })
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+}
 
 // values|result [[x,y]...]
 export function findLineByLeastSquares(values) {
@@ -9,18 +46,9 @@ export function findLineByLeastSquares(values) {
   let sum_xx = 0
   let count = 0
 
-  /*
-   * We'll use those variables for faster read/write access.
-   */
-  let x = 0
-  let y = 0
-
-  /*
-   * Calculate the sum for each of the parts necessary.
-   */
   for (let v = 0; v < values.length; v++) {
-    x = values[v][0]
-    y = values[v][1]
+    let x = values[v][0]
+    let y = values[v][1]
     sum_x += x
     sum_y += y
     sum_xx += x * x
@@ -41,8 +69,8 @@ export function findLineByLeastSquares(values) {
   const result = []
 
   for (let v = 0; v < values.length; v++) {
-    x = values[v][0]
-    y = x * m + b
+    let x = values[v][0]
+    let y = x * m + b
     result.push([x, y])
   }
 
@@ -55,10 +83,14 @@ export function findLineByLeastSquares(values) {
 const mean = (arr) =>
   arr.length === 0 ? 0 : arr.reduce((sum, value) => sum + value, 0) / arr.length
 
-const analyse = (users) => {
-  const beforeAfter = users.map(({ stepsBefore, stepsAfter }) => {
-    return [stepsBefore, stepsAfter]
-  })
+const analyse = (users, useFixed = false) => {
+  const beforeAfter = useFixed
+    ? users.map(({ stepsBeforeFixed, stepsAfterFixed }) => {
+        return [stepsBeforeFixed, stepsAfterFixed]
+      })
+    : users.map(({ stepsBefore, stepsAfter }) => {
+        return [stepsBefore, stepsAfter]
+      })
 
   if (
     beforeAfter.some(
@@ -79,14 +111,19 @@ const analyse = (users) => {
   // const test = ttest(medians.map(([x]) => x), medians.map(([,x]) => x))
   const test = ttest(diffs)
 
+  const before = mean(beforeAfter.map(([x]) => x))
+  const after = mean(beforeAfter.map(([, x]) => x))
+  const percentChange = -((1 - after / before) * 100)
+
   return {
     // avgDiff, sdDiff, t,
     p: test.pValue(),
     testValue: test.testValue(),
     valid: test.valid(),
     freedom: test.freedom(),
-    before: mean(beforeAfter.map(([x]) => x)),
-    after: mean(beforeAfter.map(([, x]) => x)),
+    before,
+    after,
+    percentChange: Number(Math.round(percentChange + 'e1') + 'e-1'),
   }
 }
 
@@ -118,7 +155,7 @@ const runAnalysis = (users, settings) => {
     const processedChunks = await Promise.all(
       userChunks.map((chunk) => runWorker(chunk, settings))
     )
-    const dataUsers = processedChunks
+    let dataUsers = processedChunks
       .flat()
       .filter(
         ({ daysBefore, daysAfter }) =>
@@ -131,6 +168,21 @@ const runAnalysis = (users, settings) => {
           daysAfter.filter(({ value }) => value > 0).length / daysAfter.length >
           1 - settings.maxMissingDaysAfter
       )
+    if (settings.fixedWFHDate) {
+      dataUsers = dataUsers
+        .filter(
+          ({ daysBeforeFixed, daysAfter }) =>
+            daysBeforeFixed.filter(({ value }) => value > 0).length /
+              daysBeforeFixed.length >
+            1 - settings.maxMissingDaysBefore
+        )
+        .filter(
+          ({ daysBeforeFixed, daysAfterFixed }) =>
+            daysAfterFixed.filter(({ value }) => value > 0).length /
+              daysAfterFixed.length >
+            1 - settings.maxMissingDaysBefore
+        )
+    }
 
     const ages = [
       '18-24',
@@ -146,46 +198,49 @@ const runAnalysis = (users, settings) => {
     const all = {
       gender: 'Any',
       ageRange: 'Any',
-      ...analyse(dataUsers),
+      ...analyse(dataUsers, !!settings.fixedWFHDate),
     }
-    const allGenders = ages.map((age) => ({
-      gender: 'Any',
-      ageRange: age,
-      ...analyse(dataUsers.filter(({ ageRange }) => ageRange === age)),
-    }))
+    // const allGenders = ages.map((age) => ({
+    //   gender: 'Any',
+    //   ageRange: age,
+    //   ...analyse(dataUsers.filter(({ ageRange }) => ageRange === age)),
+    // }))
     const allMale = {
       gender: 'Male',
       ageRange: 'all',
-      ...analyse(dataUsers.filter(({ gender }) => gender === 'Male')),
-    }
-    const male = ages.map((age) => ({
-      gender: 'Male',
-      ageRange: age,
       ...analyse(
-        dataUsers.filter(
-          ({ ageRange, gender }) => ageRange === age && gender === 'Male'
-        )
+        dataUsers.filter(({ gender }) => gender === 'Male'),
+        !!settings.fixedWFHDate
       ),
-    }))
+    }
+    // const male = ages.map((age) => ({
+    //   gender: 'Male',
+    //   ageRange: age,
+    //   ...analyse(
+    //     dataUsers.filter(
+    //       ({ ageRange, gender }) => ageRange === age && gender === 'Male'
+    //     )
+    //   ),
+    // }))
     const allFemale = {
       gender: 'Female',
       ageRange: 'all',
-      ...analyse(dataUsers.filter(({ gender }) => gender === 'Female')),
-    }
-    const female = ages.map((age) => ({
-      gender: 'Female',
-      ageRange: age,
       ...analyse(
-        dataUsers.filter(
-          ({ ageRange, gender }) => ageRange === age && gender === 'Female'
-        )
+        dataUsers.filter(({ gender }) => gender === 'Female'),
+        !!settings.fixedWFHDate
       ),
-    }))
+    }
+    // const female = ages.map((age) => ({
+    //   gender: 'Female',
+    //   ageRange: age,
+    //   ...analyse(
+    //     dataUsers.filter(
+    //       ({ ageRange, gender }) => ageRange === age && gender === 'Female'
+    //     )
+    //   ),
+    // }))
 
-    resolve([
-      dataUsers,
-      [all, ...allGenders, allMale, ...male, allFemale, ...female],
-    ])
+    resolve([dataUsers, [all, allMale, allFemale]])
   })
 }
 

@@ -26,6 +26,7 @@ const createBeforeAndAfterDays = (
     monthsAfter = 3,
     includeWeekends = true,
     useMedian = true,
+    fixedWFHDate = null,
   } = {}
 ) => {
   const f = useMedian ? median : mean
@@ -52,7 +53,7 @@ const createBeforeAndAfterDays = (
     const stepsAfter = f(daysAfter.map(({ value }) => value))
     const change = getPercentageChange(stepsBefore, stepsAfter)
 
-    return {
+    const result = {
       ...user,
       daysBefore,
       daysAfter,
@@ -65,6 +66,37 @@ const createBeforeAndAfterDays = (
         return acc + curr.value
       }, 0),
     }
+
+    if (fixedWFHDate) {
+      const daysBeforeFixed = days.filter(
+        ({ date }) =>
+          new Date(date) < new Date(fixedWFHDate) &&
+          moment(date).isAfter(
+            moment(fixedWFHDate).subtract(monthsBefore, 'months')
+          ) &&
+          (includeWeekends ? true : !isWeekend(date))
+      )
+      const daysAfterFixed = days.filter(
+        ({ date }) =>
+          new Date(date) >= new Date(fixedWFHDate) &&
+          moment(date).isBefore(
+            moment(fixedWFHDate).add(monthsAfter, 'months')
+          ) &&
+          (includeWeekends ? true : !isWeekend(date))
+      )
+      const stepsBeforeFixed = f(daysBeforeFixed.map(({ value }) => value))
+      const stepsAfterFixed = f(daysAfterFixed.map(({ value }) => value))
+      const changeFixed = getPercentageChange(stepsBeforeFixed, stepsAfterFixed)
+
+      result.daysBeforeFixed = daysBeforeFixed
+      result.daysAfterFixed = daysAfterFixed
+      result.stepsBeforeFixed = stepsBeforeFixed
+      result.stepsAfterFixed = stepsAfterFixed
+      result.stepsDifferenceFixed = stepsAfterFixed / stepsBeforeFixed - 1
+      result.changeFixed = changeFixed
+    }
+
+    return result
   })
 }
 

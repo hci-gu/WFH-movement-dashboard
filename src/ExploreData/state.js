@@ -57,14 +57,16 @@ export const filtersAtom = atom({
     gender: null,
     country: null,
     appName: null,
+    education: null,
   },
 })
 
 export const analysisSettingsAtom = atom({
   key: 'analysis-settings',
   default: {
+    fixedWFHDate: null,
     useMedian: true,
-    includeWeekends: false,
+    includeWeekends: true,
     monthsBefore: 3,
     monthsAfter: 3,
     maxMissingDaysBefore: 0.05,
@@ -94,8 +96,10 @@ export const usersSelector = selector({
     const users = get(usersAtom)
     const dates = get(datesAtom)
     const filters = get(filtersAtom)
+    const analysisSettings = get(analysisSettingsAtom)
 
     return users
+      .filter((u) => !!u.gender)
       .filter((u) => {
         return Object.keys(filters).every((key) => {
           if (filters[key]) {
@@ -119,6 +123,16 @@ export const usersSelector = selector({
           dates.beforePeriod.unit
         )
 
+        if (analysisSettings.fixedWFHDate) {
+          const fixedDateValue = moment(analysisSettings.fixedWFHDate).diff(
+            u.initialDataDate,
+            dates.beforePeriod.unit
+          )
+          return (
+            value > dates.beforePeriod.value &&
+            fixedDateValue > dates.beforePeriod.value
+          )
+        }
         return value > dates.beforePeriod.value
       })
   },

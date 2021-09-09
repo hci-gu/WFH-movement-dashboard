@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { Button } from 'antd'
 import styled from 'styled-components'
@@ -13,7 +13,7 @@ import {
   widgetAtom,
 } from './state'
 
-import { runAnalysis } from './dataUtils'
+import { downloadJson, runAnalysis } from './dataUtils'
 import UserTable from './components/UserTable'
 import AnalysisTable from './components/AnalysisTable'
 import AnalysisSettings from './components/AnalysisSettings'
@@ -65,29 +65,64 @@ const TitleAndSelect = styled.div`
   }
 `
 
-function WidgetSelector({ dataUsers, allUsers }) {
+function WidgetSelector({ dataUsers, allUsers, users }) {
   const [activeWidget] = useRecoilState(widgetAtom)
+  const ref = useRef()
 
+  const onReady = (plot) => {
+    ref.current = plot
+  }
+
+  const downloadImage = () => {
+    ref.current.downloadImage()
+  }
+
+  let component
   switch (activeWidget) {
     case 'AnalysisTable':
       return <AnalysisTable />
     case 'UserTable':
       return <UserTable useAnalysis={dataUsers.length > 0} />
     case 'WFHDays':
-      return <WFHDays />
-    case 'EstimationPieChart':
-      return <EstimationPieChart />
-    case 'GenderPieChart':
-      return (
-        <GenderPieChart users={dataUsers.length > 0 ? dataUsers : allUsers} />
+      component = (
+        <WFHDays
+          users={dataUsers.length > 0 ? dataUsers : users}
+          onReady={onReady}
+        />
       )
+      break
+    case 'EstimationPieChart':
+      component = <EstimationPieChart onReady={onReady} />
+      break
+    case 'GenderPieChart':
+      component = (
+        <GenderPieChart
+          users={dataUsers.length > 0 ? dataUsers : allUsers}
+          onReady={onReady}
+        />
+      )
+      break
     case 'EstimationPlot':
-      return <EstimationPlot />
+      component = <EstimationPlot onReady={onReady} />
+      break
     case 'AgeGroups':
-      return <AgeGroups users={dataUsers.length > 0 ? dataUsers : allUsers} />
+      component = (
+        <AgeGroups
+          users={dataUsers.length > 0 ? dataUsers : allUsers}
+          onReady={onReady}
+        />
+      )
+      break
     default:
       return null
   }
+
+  return (
+    <>
+      <Button onClick={downloadImage}>export</Button>
+      {component}
+    </>
+  )
 }
 
 function App() {
@@ -101,10 +136,19 @@ function App() {
   const dataAnalysis = () => {
     if (loading) return
     const run = async () => {
+      console.log('RUN ANALYSIS WITH', users.length)
       const [dataUsers, analysedRows] = await runAnalysis(
         users,
         analysisSettings
       )
+      downloadJson({
+        users: dataUsers.map((user) => {
+          delete user.days
+          return user
+        }),
+        rows: analysedRows,
+      })
+      console.log('I GOT THIS MANY BACK', dataUsers.length)
       setAnalysis(analysedRows)
       setDataUsers(dataUsers)
       setLoading(false)
@@ -125,6 +169,7 @@ function App() {
         <Filter dataKey="gender" />
         <Filter dataKey="country" />
         <Filter dataKey="appName" />
+        <Filter dataKey="education" />
         <PeriodInput />
 
         <AnalysisSettings />
@@ -141,7 +186,11 @@ function App() {
           <AmountHeader dataUsers={dataUsers} allUsers={allUsers} />
           <WidgetSelect />
         </TitleAndSelect>
-        <WidgetSelector dataUsers={dataUsers} allUsers={allUsers} />
+        <WidgetSelector
+          dataUsers={dataUsers}
+          allUsers={allUsers}
+          users={users}
+        />
       </div>
     </Container>
   )

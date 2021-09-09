@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import Chart from './Chart'
-import { usersByDay, usersByWeek, usersForDay } from '../state'
+import { usersByWeek, usersForDay } from '../state'
 
 const Container = styled.div`
   width: 100%;
-  height: 500px;
+  height: 700px;
 
   display: flex;
   flex-direction: column;

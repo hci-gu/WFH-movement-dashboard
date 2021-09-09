@@ -2,8 +2,9 @@ import React from 'react'
 import { Pie } from '@ant-design/charts'
 import { useRecoilValue } from 'recoil'
 import { dataUsersAtom } from '../../state'
+import theme from '../../../shared/theme'
 
-const PieChart = () => {
+const PieChart = ({ onReady }) => {
   const dataUsers = useRecoilValue(dataUsersAtom)
   const data = dataUsers
     .filter(({ stepsEstimate }) => stepsEstimate !== 0)
@@ -18,6 +19,7 @@ const PieChart = () => {
     }, {})
 
   var config = {
+    theme,
     appendPadding: 10,
     radius: 0.9,
     data: Object.keys(data).map((key) => ({
@@ -29,7 +31,7 @@ const PieChart = () => {
     label: {
       type: 'inner',
       offset: '-30%',
-      content: function content(_ref) {
+      content: (_ref) => {
         var percent = _ref.percent.toFixed(3)
         return ''.concat(percent * 100, '%')
       },
@@ -39,7 +41,7 @@ const PieChart = () => {
       },
     },
   }
-  return <Pie {...config} />
+  return <Pie {...config} onReady={onReady} />
 }
 
 export default PieChart

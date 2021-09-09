@@ -19,6 +19,16 @@ const optionsForKey = (key) => {
       ]
     case 'gender':
       return ['Male', 'Female']
+    case 'education':
+      return [
+        'No higher education',
+        'High school',
+        "Bachelor's Degree",
+        "Master's Degree",
+        'PhD',
+        'Trade/Vocational School',
+        'Prefer not to say',
+      ]
     case 'appName':
       return ['WFH Movement', 'SFH Movement']
     default:
