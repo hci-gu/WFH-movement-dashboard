@@ -101,14 +101,6 @@ const analyse = (users, useFixed = false) => {
     throw new Error('error in data')
 
   const diffs = beforeAfter.map(([before, after]) => (after || 0) - before)
-
-  // manual calculation, left to ttest-package
-  // const avgDiff = diffs.reduce((sum, diff) => sum + diff, 0) / medians.length
-  // const sdDiff = Math.sqrt(diffs.reduce((sum, diff) => sum + (diff - avgDiff) * (diff - avgDiff), 0) / (medians.length))
-  // const t = avgDiff / (sdDiff/Math.sqrt(medians.length))
-  // console.log({ avgDiff, sdDiff, t })
-
-  // const test = ttest(medians.map(([x]) => x), medians.map(([,x]) => x))
   const test = ttest(diffs)
 
   const before = mean(beforeAfter.map(([x]) => x))
@@ -116,7 +108,6 @@ const analyse = (users, useFixed = false) => {
   const percentChange = -((1 - after / before) * 100)
 
   return {
-    // avgDiff, sdDiff, t,
     p: test.pValue(),
     testValue: test.testValue(),
     valid: test.valid(),
@@ -213,15 +204,15 @@ const runAnalysis = (users, settings) => {
         !!settings.fixedWFHDate
       ),
     }
-    // const male = ages.map((age) => ({
-    //   gender: 'Male',
-    //   ageRange: age,
-    //   ...analyse(
-    //     dataUsers.filter(
-    //       ({ ageRange, gender }) => ageRange === age && gender === 'Male'
-    //     )
-    //   ),
-    // }))
+    const male = ages.map((age) => ({
+      gender: 'Male',
+      ageRange: age,
+      ...analyse(
+        dataUsers.filter(
+          ({ ageRange, gender }) => ageRange === age && gender === 'Male'
+        )
+      ),
+    }))
     const allFemale = {
       gender: 'Female',
       ageRange: 'all',
@@ -230,17 +221,17 @@ const runAnalysis = (users, settings) => {
         !!settings.fixedWFHDate
       ),
     }
-    // const female = ages.map((age) => ({
-    //   gender: 'Female',
-    //   ageRange: age,
-    //   ...analyse(
-    //     dataUsers.filter(
-    //       ({ ageRange, gender }) => ageRange === age && gender === 'Female'
-    //     )
-    //   ),
-    // }))
+    const female = ages.map((age) => ({
+      gender: 'Female',
+      ageRange: age,
+      ...analyse(
+        dataUsers.filter(
+          ({ ageRange, gender }) => ageRange === age && gender === 'Female'
+        )
+      ),
+    }))
 
-    resolve([dataUsers, [all, allMale, allFemale]])
+    resolve([dataUsers, [all, allMale, ...male, allFemale, ...female]])
   })
 }
 

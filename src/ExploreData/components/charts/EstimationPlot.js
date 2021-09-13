@@ -2,7 +2,6 @@ import React from 'react'
 import { Scatter } from '@ant-design/charts'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { dataUsersAtom, userTableFilterAtom } from '../../state'
-import { findLineByLeastSquares } from '../../dataUtils'
 import theme from '../../../shared/theme'
 
 function roundToPointFive(num) {

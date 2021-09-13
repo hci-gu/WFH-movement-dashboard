@@ -1,7 +1,7 @@
 import { Select } from 'antd'
 import React from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { filtersAtom, userCountriesSelector } from '../state'
+import { filtersAtom, userCountriesSelector } from '../../state'
 
 const optionsForKey = (key) => {
   switch (key) {

@@ -2,7 +2,7 @@ import { Checkbox, DatePicker, InputNumber } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { useRecoilState } from 'recoil'
-import { analysisSettingsAtom } from '../state'
+import { analysisSettingsAtom } from '../../state'
 import moment from 'moment'
 
 const Container = styled.div`

@@ -44,10 +44,18 @@ export const userTableFilterAtom = atom({
   default: [],
 })
 
+export const availableWidgets = [
+  'AgeGroups',
+  'AnalysisTable',
+  'UserTable',
+  'WFHDays',
+  'GenderPieChart',
+  'EstimationPieChart',
+  'EstimationPlot',
+]
 export const widgetAtom = atom({
   key: 'widget-to-display',
-  // default: 'AnalysisTable',
-  default: 'AgeGroups',
+  default: availableWidgets[0],
 })
 
 export const filtersAtom = atom({

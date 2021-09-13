@@ -2,7 +2,7 @@ import { InputNumber, Select } from 'antd'
 import React from 'react'
 import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
-import { datesAtom } from '../state'
+import { datesAtom } from '../../state'
 
 const Container = styled.div`
   display: grid;

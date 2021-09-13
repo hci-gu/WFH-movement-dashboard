@@ -69,10 +69,10 @@ const columns = [
     title: 'Gender',
     dataIndex: 'gender',
   },
-  // {
-  //   title: 'Age range',
-  //   dataIndex: 'ageRange',
-  // },
+  {
+    title: 'Age range',
+    dataIndex: 'ageRange',
+  },
   {
     title: 'p',
     dataIndex: 'p',

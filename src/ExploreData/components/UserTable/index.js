@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Input, Table, Tag } from 'antd'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { dataUsersAtom, usersSelector, userTableFilterAtom } from '../state'
+import { dataUsersAtom, usersSelector, userTableFilterAtom } from '../../state'
 import User from './User'
 import moment from 'moment'
 import styled from 'styled-components'
