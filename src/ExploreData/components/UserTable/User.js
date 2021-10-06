@@ -7,6 +7,7 @@ const Container = styled.div`
 `
 
 const User = ({ user }) => {
+  console.log(user)
   var config = {
     height: 450,
     data: user.days,

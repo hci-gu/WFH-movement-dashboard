@@ -96,50 +96,50 @@ const EstimationPlot = ({ onReady }) => {
       // },
     },
     pointStyle: {
-      fillOpacity: 1,
+      fillOpacity: 0.2,
       fill: '#37474F',
     },
     annotations: [
-      // {
-      //   type: 'text',
-      //   position: ['-0.5', '-0.5'],
-      //   content: `${percentUsersForQuadrant(
-      //     dataUsers,
-      //     (x) => x < 0,
-      //     (y) => y < 0
-      //   )}`,
-      //   style: annotationStyle,
-      // },
-      // {
-      //   type: 'text',
-      //   position: ['0.5', '-0.5'],
-      //   content: `${percentUsersForQuadrant(
-      //     dataUsers,
-      //     (x) => x > 0,
-      //     (y) => y < 0
-      //   )}`,
-      //   style: annotationStyle,
-      // },
-      // {
-      //   type: 'text',
-      //   position: ['-0.5', '0.5'],
-      //   content: `${percentUsersForQuadrant(
-      //     dataUsers,
-      //     (x) => x < 0,
-      //     (y) => y > 0
-      //   )}`,
-      //   style: annotationStyle,
-      // },
-      // {
-      //   type: 'text',
-      //   position: ['0.5', '0.5'],
-      //   content: `${percentUsersForQuadrant(
-      //     dataUsers,
-      //     (x) => x > 0,
-      //     (y) => y > 0
-      //   )}`,
-      //   style: annotationStyle,
-      // },
+      {
+        type: 'text',
+        position: ['-0.5', '-0.5'],
+        content: `${percentUsersForQuadrant(
+          dataUsers,
+          (x) => x < 0,
+          (y) => y < 0
+        )}`,
+        style: annotationStyle,
+      },
+      {
+        type: 'text',
+        position: ['0.5', '-0.5'],
+        content: `${percentUsersForQuadrant(
+          dataUsers,
+          (x) => x > 0,
+          (y) => y < 0
+        )}`,
+        style: annotationStyle,
+      },
+      {
+        type: 'text',
+        position: ['-0.5', '0.5'],
+        content: `${percentUsersForQuadrant(
+          dataUsers,
+          (x) => x < 0,
+          (y) => y > 0
+        )}`,
+        style: annotationStyle,
+      },
+      {
+        type: 'text',
+        position: ['0.5', '0.5'],
+        content: `${percentUsersForQuadrant(
+          dataUsers,
+          (x) => x > 0,
+          (y) => y > 0
+        )}`,
+        style: annotationStyle,
+      },
       {
         type: 'text',
         position: ['-0.5', '-1.05'],

@@ -5,12 +5,16 @@ import { RecoilRoot } from 'recoil'
 import 'antd/dist/antd.css'
 import DownloadsDashboard from './DownloadsDashboard'
 import ExploreDataDashboard from './ExploreData'
+import DatasetDashboard from './Dataset'
 
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
       <Router>
         <Switch>
+          <Route path="/dataset/:id">
+            <DatasetDashboard />
+          </Route>
           <Route path="/explore-data">
             <ExploreDataDashboard />
           </Route>
