@@ -20,8 +20,8 @@ export const StepCountForSeries = ({ data, seriesList, range }) => {
   return (
     <div>
       {seriesList
-        .filter((s) => s !== 'before')
-        .map((series) => (
+        .filter(({ name }) => name !== 'before')
+        .map(({ name }) => (
           <StepCount
             before={
               range
@@ -30,10 +30,10 @@ export const StepCountForSeries = ({ data, seriesList, range }) => {
             }
             after={
               range
-                ? totalStepsForRange(data, series, range)
-                : totalSteps(data, series)
+                ? totalStepsForRange(data, name, range)
+                : totalSteps(data, name)
             }
-            name={series}
+            name={name}
           />
         ))}
     </div>
@@ -46,8 +46,8 @@ export const StepCount = ({ before, after, name = 'After' }) => {
   return (
     <StepCountContainer>
       <div>
-        <span style={{ color: '#668FF2' }}>Before: {before}</span>
-        <span style={{ color: '#7DD4A9' }}>
+        <span style={{ color: '#255C99' }}>Before: {before}</span>
+        <span style={{ color: '#B3001B' }}>
           {name}: {after}
         </span>
       </div>

@@ -4,10 +4,13 @@ import { useParams } from 'react-router'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import { useDataset } from './api'
+import BeforeAfterScatter from './components/BeforeAfterScatter'
 import DayChart from './components/DayChart'
 import DiffChart from './components/DiffChart'
 import Filter from './components/Filter'
 import Occupations from './components/Occupations'
+import SeriesTotalOverTime from './components/SeriesTotalOverTime'
+import SeriesWithCount from './components/SeriesWithCount'
 import Settings from './components/Settings'
 import { datasetAverageAtom, filteredDatasetAtom } from './state'
 
@@ -50,7 +53,8 @@ const UserCount = () => {
 }
 
 function App() {
-  useDataset()
+  const dataset = useDataset()
+  console.log('dataset', dataset)
 
   return (
     <Container>
@@ -60,13 +64,19 @@ function App() {
         <Filter dataKey="gender" />
         <br></br>
         <Filter dataKey="ageRange" />
+        <br></br>
+        <SeriesWithCount />
       </SidePanel>
       <div>
         <DayChart />
         <br></br>
-        <DiffChart />
+        {/* <SeriesTotalOverTime />
+        <br></br> */}
+        {/* <DiffChart /> */}
         <br></br>
-        <Occupations />
+        {/* <BeforeAfterScatter />
+        <br></br> */}
+        {/* <Occupations /> */}
       </div>
     </Container>
   )

@@ -1,10 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-import { Line } from '@ant-design/charts'
+import { Bar, Line } from '@ant-design/charts'
 import { useRecoilValue } from 'recoil'
-import { rowSelectorAtom, seriesInDatasetAtom } from '../state'
-import { StepCountForSeries } from './StepCount'
+import { rowSelectorAtom, seriesInDatasetAtom, SETTINGS } from '../state'
+import { StepCount, StepCountForSeries } from './StepCount'
+import { colorForSeries, totalSteps } from '../utils'
+import { Button } from 'antd'
+import { useRef } from 'react'
+import theme from '../../shared/theme'
+import ColumnChart from '@ant-design/charts/es/plots/column'
 
 const Container = styled.div`
   display: flex;
@@ -39,7 +44,7 @@ const annotationForRange = (rows, seriesList, range) => {
     },
     {
       type: 'html',
-      position: [`${startOffset + 2}%`, '40%'],
+      position: [`${startOffset + 1.75}%`, '90%'],
       html: () => {
         const ele = document.createElement('div')
         ReactDOM.render(
@@ -68,6 +73,7 @@ const annotationForRange = (rows, seriesList, range) => {
 }
 
 const DayChart = () => {
+  const ref = useRef()
   const data = useRecoilValue(rowSelectorAtom)
   const seriesList = useRecoilValue(seriesInDatasetAtom)
   console.log('DayChart', data)
@@ -79,7 +85,7 @@ const DayChart = () => {
     height: 800,
     padding: 'auto',
     xField: 'hour',
-    yField: 'value',
+    yField: 'diff',
     seriesField: 'series',
     color: ({ series }) => {
       if (series === 'before') {
@@ -89,16 +95,11 @@ const DayChart = () => {
         return 'rgba(225, 50, 50, 1)'
       }
 
-      const value = parseInt(series.replace(/^\D+/g, ''))
-      if (series.indexOf('before') !== -1) {
-        return `rgba(50, 50, 180, ${1 - value / 12})`
-      }
-      if (series.indexOf('after') !== -1) {
-        return `rgba(225, 50, 50, ${1 - value / 12})`
-      }
-      return 'rgba(0,0,0,0.25)'
+      return colorForSeries(series, seriesList)
     },
     smooth: true,
+    isStack: true,
+    // isGroup: true,
     annotations: [
       // ...annotationForRange(data, [0, 11]),
       // ...annotationForRange(data, [12, 24]),
@@ -110,12 +111,24 @@ const DayChart = () => {
 
   return (
     <Container>
-      {/* <StepCountForSeries seriesList={seriesList} data={data} /> */}
-      {/* <StepCount
-        before={totalSteps(data, 'before')}
-        after={totalSteps(data, 'after')}
-      /> */}
-      <Line {...config} style={{ width: '100%' }} />
+      <Button onClick={() => ref.current.downloadImage('chart', 'image/png')}>
+        Download
+      </Button>
+      {SETTINGS.displayStepCount && (
+        <StepCount
+          before={totalSteps(data, 'before')}
+          after={totalSteps(data, 'after')}
+        />
+      )}
+      <ColumnChart
+        {...config}
+        theme={theme}
+        background="orange"
+        style={{ width: '100%', backgroundColor: 'white' }}
+        onReady={(plot) => {
+          ref.current = plot
+        }}
+      />
     </Container>
   )
 }

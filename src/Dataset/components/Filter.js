@@ -35,14 +35,20 @@ const Filter = ({ dataKey }) => {
   }
 
   return (
-    <Select onChange={onChange} placeholder={`Select ${dataKey}`}>
-      <Select.Option value={null}>All</Select.Option>
-      {optionsForKey(dataKey).map((value) => (
-        <Select.Option value={value} key={`Filter_${dataKey}_${value}`}>
-          {value}
-        </Select.Option>
-      ))}
-    </Select>
+    <>
+      <Select
+        onChange={onChange}
+        mode="multiple"
+        allowClear
+        placeholder={`Select ${dataKey}`}
+      >
+        {optionsForKey(dataKey).map((value) => (
+          <Select.Option value={value} key={`Filter_${dataKey}_${value}`}>
+            {value}
+          </Select.Option>
+        ))}
+      </Select>
+    </>
   )
 }
 

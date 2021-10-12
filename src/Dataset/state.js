@@ -1,5 +1,17 @@
 import { atom, selector } from 'recoil'
-import { getMedian, occupationKey, totalDiff } from './utils'
+import {
+  diffForHours,
+  getMedian,
+  occupationKey,
+  totalDiff,
+  totalValue,
+} from './utils'
+
+export const SETTINGS = {
+  num_series: 2,
+  createDiff: true,
+  displayStepCount: true,
+}
 
 export const datasetAtom = atom({
   key: 'dataset',
@@ -9,15 +21,13 @@ export const datasetAtom = atom({
 export const filtersAtom = atom({
   key: 'filters',
   default: {
-    gender: null,
-    ageRange: null,
+    gender: [],
+    ageRange: [],
     // index: [1300, 1347],
     index: null,
-    occupations: [],
     // occupations: [
     //   'student',
     //   'studerande',
-    //   'sebastiantestaaaaar',
     //   'retired',
     //   'pensionär',
     // ],
@@ -41,19 +51,24 @@ export const filteredDatasetAtom = selector({
     const filters = get(filtersAtom)
 
     const rows = dataset
-      .map((u) => ({ ...u, diff: totalDiff(u.rows) }))
-      .filter((u) => u.diff > 1)
+      .map((u) => {
+        if (SETTINGS.createDiff) {
+          return { ...u, ...diffForHours(u.rows) }
+        }
+        return u
+      })
+      .filter((u) => u.before !== 0 && u.after !== 0)
       .filter((u) => {
         return Object.keys(filters).every((key) => {
           if (key === 'index') return true
           if (key === 'occupations' && u.occupation) {
             const occupation = occupationKey(u.occupation)
-            return filters[key].indexOf(occupation) === -1
+            return filters.occupations.indexOf(occupation) === -1
           } else if (key === 'occupations') {
             return true
           }
-          if (filters[key]) {
-            return u[key] === filters[key]
+          if (filters[key].length) {
+            return filters[key].indexOf(u[key]) !== -1
           }
           return true
         })
@@ -65,7 +80,6 @@ export const filteredDatasetAtom = selector({
     if (filters.index) {
       return rows.slice(filters.index[0], filters.index[1])
     }
-    console.log('rows', rows)
     return rows
   },
 })
@@ -78,10 +92,42 @@ export const seriesInDatasetAtom = selector({
     if (!dataset.length) return []
 
     const seriesList = dataset
-      .find((u) => u.rows.length > 1000)
+      .find((u) => u.rows.length > SETTINGS.num_series * 23)
       .rows.map(({ series }) => series)
 
-    return seriesList.filter((item, i, ar) => ar.indexOf(item) === i)
+    const uniqueSeries = seriesList
+      .filter((item, i, ar) => ar.indexOf(item) === i)
+      .map((name, index) => {
+        return {
+          name,
+          index,
+        }
+      })
+
+    return uniqueSeries
+  },
+})
+
+export const seriesWithCountAtom = selector({
+  key: 'series-with-count',
+  get: ({ get }) => {
+    const seriesList = get(seriesInDatasetAtom)
+    const dataset = get(filteredDatasetAtom)
+
+    return seriesList.map(({ name, index }) => {
+      const usersWithDataInSeries = dataset.filter((u) => {
+        return !!u.rows.find((r) => r.series === name)
+      })
+      const rows = getMedian(dataset, name)
+      const total = totalValue(rows)
+
+      return {
+        name,
+        count: usersWithDataInSeries.length,
+        index,
+        totalSteps: total,
+      }
+    })
   },
 })
 
@@ -90,14 +136,13 @@ export const datasetAverageAtom = selector({
   get: ({ get }) => {
     const dataset = get(filteredDatasetAtom)
     const series = get(seriesInDatasetAtom)
-    console.log('average', series)
 
     if (!dataset.length) return null
 
     let array = []
 
-    series.forEach((key) => {
-      array = [...array, ...getMedian(dataset, key)]
+    series.forEach(({ name }) => {
+      array = [...array, ...getMedian(dataset, name)]
     })
 
     return array
