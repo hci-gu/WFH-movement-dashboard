@@ -58,6 +58,7 @@ export const filteredDatasetAtom = selector({
         return u
       })
       .filter((u) => u.before !== 0 && u.after !== 0)
+      .filter((u) => u.before <= 10000 && u.after <= 10000)
       .filter((u) => {
         return Object.keys(filters).every((key) => {
           if (key === 'index') return true
@@ -163,6 +164,18 @@ export const rowSelectorAtom = selector({
       return average
     }
     return dataset[settings.index].rows
+  },
+})
+
+export const currentUserSelectorAtom = selector({
+  key: 'current-user',
+  get: ({ get }) => {
+    const dataset = get(filteredDatasetAtom)
+    const settings = get(settingsAtom)
+
+    if (settings.showAverage) return null
+
+    return dataset[settings.index]
   },
 })
 

@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import { useDataset } from './api'
 import BeforeAfterScatter from './components/BeforeAfterScatter'
+import CurrentUser from './components/CurrentUser'
 import DayChart from './components/DayChart'
 import DiffChart from './components/DiffChart'
 import Filter from './components/Filter'
@@ -66,6 +67,7 @@ function App() {
         <Filter dataKey="ageRange" />
         <br></br>
         <SeriesWithCount />
+        <CurrentUser />
       </SidePanel>
       <div>
         <DayChart />

@@ -1,8 +1,10 @@
-const median = (arr) => {
-  const mid = Math.floor(arr.length / 2),
-    nums = [...arr].sort((a, b) => a - b)
-  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2
-}
+import median from './median'
+
+// const median = (arr) => {
+//   const mid = Math.floor(arr.length / 2),
+//     nums = [...arr].sort((a, b) => a - b)
+//   return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2
+// }
 
 const createHourMap = (from = 0, to = 23) =>
   Array.from({ length: to - from + 1 })
@@ -32,11 +34,16 @@ export const getMedian = (users, series) => {
       })
   })
 
-  return Object.keys(map).map((key) => ({
-    hour: key,
-    value: median(map[key]),
-    series,
-  }))
+  return Object.keys(map).map((key) => {
+    const medianObj = median(map[key])
+
+    return {
+      hour: key,
+      ...medianObj,
+      value: medianObj.median,
+      series,
+    }
+  })
 }
 
 export const totalSteps = (hours, series) =>
