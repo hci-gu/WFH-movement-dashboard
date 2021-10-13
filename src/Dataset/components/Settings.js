@@ -1,6 +1,6 @@
 import { Button, Checkbox, Input } from 'antd'
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 import { settingsAtom } from '../state'
 
@@ -24,7 +24,7 @@ const ButtonContainer = styled.div`
 `
 
 const Settings = () => {
-  const [settings, setSettings] = useRecoilState(settingsAtom)
+  const [settings, setSettings] = useAtom(settingsAtom)
 
   const onChange = (key, value) => {
     console.log(key, value)

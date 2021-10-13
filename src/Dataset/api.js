@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import axios from 'axios'
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { datasetAtom } from './state'
 import { useParams } from 'react-router'
 const API_URL = process.env.REACT_APP_API_URL
@@ -27,7 +27,7 @@ const getAllRows = async (id, rows = [], offset = 0) => {
 
 export const useDataset = () => {
   const { id } = useParams()
-  const [dataset, setDataset] = useRecoilState(datasetAtom)
+  const [dataset, setDataset] = useAtom(datasetAtom)
 
   useEffect(() => {
     if (!id) return
@@ -38,6 +38,21 @@ export const useDataset = () => {
     }
     getRows()
   }, [setDataset, id])
+
+  return dataset
+}
+
+export const useFixedDataset = (id) => {
+  const [dataset, setDataset] = useAtom(datasetAtom)
+
+  useEffect(() => {
+    const getRows = async () => {
+      const rows = await getAllRows(id)
+      console.log(rows)
+      setDataset(rows)
+    }
+    getRows()
+  }, [setDataset])
 
   return dataset
 }

@@ -1,8 +1,6 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { Bar, Box, Line, Column } from '@ant-design/charts'
-import { useRecoilValue } from 'recoil'
 import { rowSelectorAtom, seriesInDatasetAtom, SETTINGS } from '../../state'
 import { StepCount, StepCountForSeries } from '../StepCount'
 import { colorForSeries, totalSteps } from '../../utils'
@@ -10,6 +8,7 @@ import { Button } from 'antd'
 import { useRef } from 'react'
 import theme from '../../../shared/theme'
 import annotationForRange from './annotation'
+import { useAtom } from 'jotai'
 
 const color = (series, seriesList) => {
   if (series === 'before') {
@@ -83,6 +82,7 @@ const LineChart = ({ baseConfig, seriesList, parentRef }) => {
   return (
     <Line
       {...config}
+      animation={false}
       theme={theme}
       style={{ width: '100%', backgroundColor: 'white' }}
       onReady={(plot) => {
@@ -94,8 +94,8 @@ const LineChart = ({ baseConfig, seriesList, parentRef }) => {
 
 const DayChart = () => {
   const ref = useRef()
-  const data = useRecoilValue(rowSelectorAtom)
-  const seriesList = useRecoilValue(seriesInDatasetAtom)
+  const [data] = useAtom(rowSelectorAtom)
+  const [seriesList] = useAtom(seriesInDatasetAtom)
   console.log('DayChart', data)
 
   const config = {
@@ -124,7 +124,7 @@ const DayChart = () => {
         />
       )}
       <LineChart baseConfig={config} seriesList={seriesList} parentRef={ref} />
-      <BoxChart baseConfig={config} seriesList={seriesList} parentRef={ref} />
+      {/* <BoxChart baseConfig={config} seriesList={seriesList} parentRef={ref} /> */}
       {/* <ColumnChart
         baseConfig={config}
         seriesList={seriesList}

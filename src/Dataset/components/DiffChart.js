@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react'
-// import styled from 'styled-components'
 import { Line, G2 } from '@ant-design/charts'
-import { useRecoilValue } from 'recoil'
 import { filteredDatasetAtom, settingsAtom } from '../state'
+import { useAtom } from 'jotai'
 
 const DiffChart = () => {
-  const rows = useRecoilValue(filteredDatasetAtom)
-  const settings = useRecoilValue(settingsAtom)
+  const [rows] = useAtom(filteredDatasetAtom)
+  const [settings] = useAtom(settingsAtom)
 
   useEffect(() => {
     G2.registerShape('point', 'index-point', {

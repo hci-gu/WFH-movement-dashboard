@@ -1,6 +1,6 @@
 import { Select } from 'antd'
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilState } from 'recoil'
 import { filtersAtom } from '../state'
 
 const optionsForKey = (key) => {
@@ -25,7 +25,7 @@ const optionsForKey = (key) => {
 }
 
 const Filter = ({ dataKey }) => {
-  const [filters, setFilters] = useRecoilState(filtersAtom)
+  const [filters, setFilters] = useAtom(filtersAtom)
 
   const onChange = (value) => {
     setFilters({

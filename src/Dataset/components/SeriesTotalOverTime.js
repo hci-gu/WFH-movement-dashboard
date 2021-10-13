@@ -1,10 +1,10 @@
 import { Line } from '@ant-design/charts'
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
 import { seriesWithCountAtom } from '../state'
 
 const SeriesTotalOverTime = () => {
-  const data = useRecoilValue(seriesWithCountAtom)
+  const [data] = useAtom(seriesWithCountAtom)
 
   const config = {
     data,

@@ -1,7 +1,7 @@
 import { Button } from 'antd'
 import React, { useState } from 'react'
 import { useParams } from 'react-router'
-import { useRecoilValue } from 'recoil'
+import { useAtom } from 'jotai'
 import styled from 'styled-components'
 import { useDataset } from './api'
 import BeforeAfterScatter from './components/BeforeAfterScatter'
@@ -44,7 +44,7 @@ const Grid = styled.div`
 
 const UserCount = () => {
   const { id } = useParams()
-  const dataset = useRecoilValue(filteredDatasetAtom)
+  const [dataset] = useAtom(filteredDatasetAtom)
 
   return (
     <h1>

@@ -1,10 +1,10 @@
 import { WordCloud } from '@ant-design/charts'
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
-import { filteredDatasetAtom, occupationsSelectorAtom } from '../state'
+import { occupationsSelectorAtom } from '../state'
 
 const Occupations = () => {
-  const rows = useRecoilValue(occupationsSelectorAtom)
+  const [rows] = useAtom(occupationsSelectorAtom)
 
   const config = {
     data: rows,

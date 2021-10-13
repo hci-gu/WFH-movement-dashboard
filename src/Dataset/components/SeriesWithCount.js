@@ -1,5 +1,5 @@
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import { seriesWithCountAtom } from '../state'
 import { colorForIndexAndName } from '../utils'
@@ -14,7 +14,7 @@ const Container = styled.div`
 `
 
 const SeriesWithCount = () => {
-  const data = useRecoilValue(seriesWithCountAtom)
+  const [data] = useAtom(seriesWithCountAtom)
 
   return (
     <Container>

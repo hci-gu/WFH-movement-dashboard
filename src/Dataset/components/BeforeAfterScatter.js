@@ -1,14 +1,15 @@
 import { Scatter } from '@ant-design/charts'
 import React, { useRef } from 'react'
-import { useRecoilValue } from 'recoil'
+
 import { Mix, G2 } from '@ant-design/charts'
 
 import { filteredDatasetAtom, rowSelectorAtom } from '../state'
 import { ConsoleSqlOutlined } from '@ant-design/icons'
+import { useAtom } from 'jotai'
 
 const BeforeAfterScatter = () => {
   const ref = useRef()
-  const data = useRecoilValue(filteredDatasetAtom)
+  const [data] = useAtom(filteredDatasetAtom)
   //   const ds = new DataSet({
   //     state: {
   //     },

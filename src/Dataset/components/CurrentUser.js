@@ -1,9 +1,9 @@
+import { useAtom } from 'jotai'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
 import { currentUserSelectorAtom } from '../state'
 
 const CurrentUser = () => {
-  const user = useRecoilValue(currentUserSelectorAtom)
+  const [user] = useAtom(currentUserSelectorAtom)
 
   if (!user) return null
 
