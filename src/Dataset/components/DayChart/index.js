@@ -1,9 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Bar, Box, Line, Column } from '@ant-design/charts'
-import { rowSelectorAtom, seriesInDatasetAtom, SETTINGS } from '../../state'
+import {
+  rowSelectorAtom,
+  seriesInDatasetAtom,
+  SETTINGS,
+  settingsAtom,
+} from '../../state'
 import { StepCount, StepCountForSeries } from '../StepCount'
-import { colorForSeries, totalSteps } from '../../utils'
+import {
+  colorForSeries,
+  downloadJson,
+  downloadWithSplitSeries,
+  totalSteps,
+} from '../../utils'
 import { Button } from 'antd'
 import { useRef } from 'react'
 import theme from '../../../shared/theme'
@@ -29,6 +39,13 @@ const Container = styled.div`
   > span {
     margin: 0.5rem;
     font-size: 24px;
+  }
+`
+
+const ButtonContainer = styled.div`
+  display: flex;
+  > button {
+    margin-right: 1rem;
   }
 `
 
@@ -92,38 +109,57 @@ const LineChart = ({ baseConfig, seriesList, parentRef }) => {
   )
 }
 
-const DayChart = () => {
+const DayChart = ({ passedRef }) => {
   const ref = useRef()
-  const [data] = useAtom(rowSelectorAtom)
+  const [dataset] = useAtom(rowSelectorAtom)
   const [seriesList] = useAtom(seriesInDatasetAtom)
-  console.log('DayChart', data)
+  const [settings] = useAtom(settingsAtom)
+
+  const data = [...dataset.rows]
+    .sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
+    // .filter((d) => {
+    //   if (!!settings.seriesIndex) {
+    //     return d.series === seriesList[settings.seriesIndex].name
+    //   }
+    //   return true
+    // })
+    .map((d) => ({ ...d, hour: `${d.hour}:00` }))
 
   const config = {
-    data: [...data]
-      .sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
-      // .filter((d) => d.series === 'before')
-      .map((d) => ({ ...d, hour: `${d.hour}:00` })),
-    height: 800,
+    data,
+    height: 720,
     padding: 'auto',
     annotations: [
-      //   ...annotationForRange(data, seriesList, [6, 10]),
-      //   ...annotationForRange(data, seriesList, [11, 15]),
-      //   ...annotationForRange(data, seriesList, [16, 20]),
+      // ...annotationForRange(data, seriesList, [6, 10]),
+      // ...annotationForRange(data, seriesList, [11, 15]),
+      // ...annotationForRange(data, seriesList, [16, 20]),
     ],
   }
 
   return (
     <Container>
-      <Button onClick={() => ref.current.downloadImage('chart', 'image/png')}>
-        Download
-      </Button>
+      <ButtonContainer>
+        <Button onClick={() => ref.current.downloadImage('chart', 'image/png')}>
+          Download image
+        </Button>
+        <Button onClick={() => downloadWithSplitSeries(data, seriesList)}>
+          Download json
+        </Button>
+      </ButtonContainer>
+      <span>
+        p: {dataset && dataset.test ? dataset.test.p.toFixed(2) : '-'}
+      </span>
       {SETTINGS.displayStepCount && (
         <StepCount
           before={totalSteps(data, 'before')}
           after={totalSteps(data, 'after')}
         />
       )}
-      <LineChart baseConfig={config} seriesList={seriesList} parentRef={ref} />
+      <LineChart
+        baseConfig={config}
+        seriesList={seriesList}
+        parentRef={passedRef ? passedRef : ref}
+      />
       {/* <BoxChart baseConfig={config} seriesList={seriesList} parentRef={ref} /> */}
       {/* <ColumnChart
         baseConfig={config}

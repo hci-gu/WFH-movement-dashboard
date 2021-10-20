@@ -143,7 +143,7 @@ const EstimationPlot = ({ onReady }) => {
       {
         type: 'text',
         position: ['-0.5', '-1.05'],
-        content: `Moved less`,
+        content: `Estimated less`,
         style: {
           textAlign: 'center',
           fontWeight: '800',
@@ -154,7 +154,7 @@ const EstimationPlot = ({ onReady }) => {
       {
         type: 'text',
         position: ['0.5', '-1.05'],
-        content: `Moved more`,
+        content: `Estimated more`,
         style: {
           textAlign: 'center',
           fontWeight: '800',
@@ -165,7 +165,7 @@ const EstimationPlot = ({ onReady }) => {
       {
         type: 'text',
         position: ['-1.05', '-0.5'],
-        content: `Estimated less`,
+        content: `Moved less`,
         rotate: -Math.PI / 2,
         style: {
           textAlign: 'center',
@@ -177,7 +177,7 @@ const EstimationPlot = ({ onReady }) => {
       {
         type: 'text',
         position: ['-1.05', '0.5'],
-        content: `Estimated more`,
+        content: `Moved more`,
         rotate: -Math.PI / 2,
         style: {
           textAlign: 'center',

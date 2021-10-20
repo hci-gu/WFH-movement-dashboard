@@ -158,3 +158,39 @@ export const colorForIndexAndName = (index, series) => {
     series.indexOf('before') !== -1 ? 12 - value : 11 + value
   return colorForIndex(modifiedIndex)
 }
+
+export const downloadWithSplitSeriesAndBefore = (data, seriesList) => {
+  const dataBefore = data.filter()
+
+  const series = seriesList.map((s) => ({
+    ...s,
+    data: data.filter((d) => d.series === s.name),
+  }))
+
+  downloadJson(series)
+}
+
+export const downloadWithSplitSeries = (data, seriesList) => {
+  const series = seriesList.map((s) => ({
+    ...s,
+    data: data.filter((d) => d.series === s.name),
+  }))
+
+  downloadJson(series)
+}
+
+export const downloadJson = (data) => {
+  let filename = 'export.json'
+
+  var blob = new Blob([JSON.stringify(data)])
+  if (window.navigator.msSaveOrOpenBlob)
+    window.navigator.msSaveBlob(blob, filename)
+  else {
+    var a = window.document.createElement('a')
+    a.href = window.URL.createObjectURL(blob, { type: 'text/plain' })
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+}

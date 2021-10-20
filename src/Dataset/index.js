@@ -48,7 +48,7 @@ const UserCount = () => {
 
   return (
     <h1>
-      <strong>{id}</strong> - {dataset.length} Users
+      <strong>{id}</strong> - {dataset.rows.length} Users
     </h1>
   )
 }

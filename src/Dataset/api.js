@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useAtom } from 'jotai'
 import { datasetAtom } from './state'
 import { useParams } from 'react-router'
-const API_URL = process.env.REACT_APP_API_URL
+const API_URL = 'http://localhost:4000'
 const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN
 
 const api = axios.create({

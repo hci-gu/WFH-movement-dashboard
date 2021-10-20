@@ -1,4 +1,5 @@
 // import { atom, selector } from 'recoil'
+import ttest from 'ttest'
 import { atom } from 'jotai'
 
 import {
@@ -32,8 +33,9 @@ export const filtersAtom = atom({
 
 export const settingsAtom = atom({
   index: 0,
-  showAverage: false,
+  showAverage: true,
   sort: true,
+  seriesIndex: 0,
 })
 
 export const filteredDatasetAtom = atom((get) => {
@@ -48,8 +50,8 @@ export const filteredDatasetAtom = atom((get) => {
       }
       return u
     })
-    .filter((u) => u.before !== 0 && u.after !== 0)
-    .filter((u) => u.before <= 10000 && u.after <= 10000)
+    // .filter((u) => u.before !== 0 && u.after !== 0)
+    // .filter((u) => u.before <= 10000 && u.after <= 10000)
     .filter((u) => {
       return Object.keys(filters).every((key) => {
         if (key === 'index') return true
@@ -66,13 +68,28 @@ export const filteredDatasetAtom = atom((get) => {
       })
     })
 
+  let test
+  if (rows.length > 0) {
+    const diffs = rows.map(({ before, after }) => after - before)
+    const result = ttest(diffs)
+    test = {
+      p: result.pValue(),
+      testValue: result.testValue(),
+      valid: result.valid(),
+      freedom: result.freedom(),
+    }
+  }
+
   if (settings.sort) {
     rows.sort((a, b) => a.diff - b.diff)
   }
   if (filters.index) {
     return rows.slice(filters.index[0], filters.index[1])
   }
-  return rows
+  return {
+    rows,
+    test,
+  }
 })
 
 export const seriesInDatasetAtom = atom((get) => {
@@ -101,10 +118,10 @@ export const seriesWithCountAtom = atom((get) => {
   const dataset = get(filteredDatasetAtom)
 
   return seriesList.map(({ name, index }) => {
-    const usersWithDataInSeries = dataset.filter((u) => {
+    const usersWithDataInSeries = dataset.rows.filter((u) => {
       return !!u.rows.find((r) => r.series === name)
     })
-    const rows = getMedian(dataset, name)
+    const rows = getMedian(dataset.rows, name)
     const total = totalValue(rows)
 
     return {
@@ -120,12 +137,12 @@ export const datasetAverageAtom = atom((get) => {
   const dataset = get(filteredDatasetAtom)
   const series = get(seriesInDatasetAtom)
 
-  if (!dataset.length) return null
+  if (!dataset.rows.length) return null
 
   let array = []
 
   series.forEach(({ name }) => {
-    array = [...array, ...getMedian(dataset, name)]
+    array = [...array, ...getMedian(dataset.rows, name)]
   })
 
   return array
@@ -134,15 +151,20 @@ export const datasetAverageAtom = atom((get) => {
 export const rowSelectorAtom = atom((get) => {
   const dataset = get(filteredDatasetAtom)
 
-  if (!dataset.length) return []
+  if (!dataset.rows.length) return { rows: [] }
 
   const average = get(datasetAverageAtom)
   const settings = get(settingsAtom)
 
   if (settings.showAverage) {
-    return average
+    return {
+      rows: average,
+      test: dataset.test,
+    }
   }
-  return dataset[settings.index].rows
+  return {
+    rows: dataset.rows[settings.index].rows,
+  }
 })
 
 export const currentUserSelectorAtom = atom((get) => {
@@ -156,7 +178,7 @@ export const currentUserSelectorAtom = atom((get) => {
 
 export const occupationsSelectorAtom = atom((get) => {
   const dataset = get(filteredDatasetAtom)
-  const dataWithOccupations = dataset.filter((r) => !!r.occupation)
+  const dataWithOccupations = dataset.rows.filter((r) => !!r.occupation)
 
   if (!dataWithOccupations.length) return []
 
