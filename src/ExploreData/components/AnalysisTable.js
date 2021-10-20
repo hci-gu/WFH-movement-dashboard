@@ -1,47 +1,47 @@
 import React from 'react'
 import { Table } from 'antd'
-import { Facet, Bar } from '@ant-design/charts'
+import { Bar } from '@ant-design/charts'
 import { useRecoilValue } from 'recoil'
 import { analysisAtom } from '../state'
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
 
-const FacetChart = ({ analysis }) => {
-  var config = {
-    type: 'mirror',
-    data: analysis.filter((r) => r.gender !== 'Any').reverse(),
-    fields: ['gender'],
-    transpose: true,
-    padding: [32, 16, 28, 16],
-    meta: {
-      age: {
-        sync: true,
-        tickCount: 11,
-      },
-      total_percentage: {
-        sync: true,
-        formatter: function formatter(v) {
-          return v + '%'
-        },
-      },
-      gender: { sync: true },
-    },
-    axes: {},
-    eachView: function eachView(view, f) {
-      return {
-        padding: [0, 48, 0, 0],
-        type: 'column',
-        options: {
-          data: f.data,
-          xField: 'ageRange',
-          yField: 'percentChange',
-          seriesField: 'gender',
-          color: ['#f04864', '#1890ff'],
-        },
-      }
-    },
-  }
-  return <Facet {...config} />
-}
+// const FacetChart = ({ analysis }) => {
+//   var config = {
+//     type: 'mirror',
+//     data: analysis.filter((r) => r.gender !== 'Any').reverse(),
+//     fields: ['gender'],
+//     transpose: true,
+//     padding: [32, 16, 28, 16],
+//     meta: {
+//       age: {
+//         sync: true,
+//         tickCount: 11,
+//       },
+//       total_percentage: {
+//         sync: true,
+//         formatter: function formatter(v) {
+//           return v + '%'
+//         },
+//       },
+//       gender: { sync: true },
+//     },
+//     axes: {},
+//     eachView: function eachView(view, f) {
+//       return {
+//         padding: [0, 48, 0, 0],
+//         type: 'column',
+//         options: {
+//           data: f.data,
+//           xField: 'ageRange',
+//           yField: 'percentChange',
+//           seriesField: 'gender',
+//           color: ['#f04864', '#1890ff'],
+//         },
+//       }
+//     },
+//   }
+//   return <Facet {...config} />
+// }
 
 const BarChart = ({ analysis }) => {
   const config = {

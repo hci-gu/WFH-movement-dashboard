@@ -1,20 +1,13 @@
-import { Scatter } from '@ant-design/charts'
 import React, { useRef } from 'react'
 
 import { Mix, G2 } from '@ant-design/charts'
 
-import { filteredDatasetAtom, rowSelectorAtom } from '../state'
-import { ConsoleSqlOutlined } from '@ant-design/icons'
+import { filteredDatasetAtom } from '../state'
 import { useAtom } from 'jotai'
 
 const BeforeAfterScatter = () => {
   const ref = useRef()
   const [data] = useAtom(filteredDatasetAtom)
-  //   const ds = new DataSet({
-  //     state: {
-  //     },
-  //   })
-  //   const dv = ds.createView().source(data)
 
   G2.registerInteraction('other-visible', {
     showEnable: [
@@ -39,7 +32,6 @@ const BeforeAfterScatter = () => {
       {
         trigger: 'plot:mousedown',
         isEnable: function isEnable(context) {
-          const chart = ref.current
           console.log(ref.current)
           setTimeout(() => {
             console.log(ref.current.chart.views[0])
@@ -96,13 +88,6 @@ const BeforeAfterScatter = () => {
       },
     ],
   })
-
-  //   const config = {
-  //     data,
-  //     xField: 'before',
-  //     yField: 'after',
-  //     shape: 'circle',
-  //   }
 
   var config = {
     tooltip: false,

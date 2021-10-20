@@ -68,7 +68,6 @@ export const totalValue = (hours) =>
     return total + hour.value
   }, 0)
 
-let count = 0
 export const diffForHours = (hours) => {
   const before = totalValue(hours.filter((row) => row.series === 'before'))
   const after = totalValue(hours.filter((row) => row.series === 'after'))
@@ -160,8 +159,6 @@ export const colorForIndexAndName = (index, series) => {
 }
 
 export const downloadWithSplitSeriesAndBefore = (data, seriesList) => {
-  const dataBefore = data.filter()
-
   const series = seriesList.map((s) => ({
     ...s,
     data: data.filter((d) => d.series === s.name),

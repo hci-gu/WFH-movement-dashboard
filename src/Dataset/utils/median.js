@@ -1,17 +1,6 @@
 // sort array ascending
 const asc = (arr) => arr.sort((a, b) => a - b)
 
-const sum = (arr) => arr.reduce((a, b) => a + b, 0)
-
-const mean = (arr) => sum(arr) / arr.length
-
-// sample standard deviation
-const std = (arr) => {
-  const mu = mean(arr)
-  const diffArr = arr.map((a) => (a - mu) ** 2)
-  return Math.sqrt(sum(diffArr) / (arr.length - 1))
-}
-
 const quantile = (sorted, q) => {
   const pos = (sorted.length - 1) * q
   const base = Math.floor(pos)
@@ -23,7 +12,7 @@ const quantile = (sorted, q) => {
   }
 }
 
-export default (arr) => {
+const median = (arr) => {
   const sorted = asc(arr)
 
   return {
@@ -36,3 +25,5 @@ export default (arr) => {
     max: sorted[sorted.length - 1],
   }
 }
+
+export default median

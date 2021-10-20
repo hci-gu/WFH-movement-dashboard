@@ -2,13 +2,7 @@
 import ttest from 'ttest'
 import { atom } from 'jotai'
 
-import {
-  diffForHours,
-  getMedian,
-  occupationKey,
-  totalDiff,
-  totalValue,
-} from './utils'
+import { diffForHours, getMedian, occupationKey, totalValue } from './utils'
 
 export const SETTINGS = {
   num_series: 2,

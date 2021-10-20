@@ -1,7 +1,7 @@
 import React from 'react'
 import { Scatter } from '@ant-design/charts'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { dataUsersAtom, userTableFilterAtom } from '../../state'
+import { useRecoilValue } from 'recoil'
+import { dataUsersAtom } from '../../state'
 import theme from '../../../shared/theme'
 
 function roundToPointFive(num) {
@@ -26,7 +26,6 @@ const percentUsersForQuadrant = (users, xtest, ytest) => {
 
 const EstimationPlot = ({ onReady }) => {
   const dataUsers = useRecoilValue(dataUsersAtom)
-  const [, setUserTableFilter] = useRecoilState(userTableFilterAtom)
 
   const filteredUsers = dataUsers
     .filter(

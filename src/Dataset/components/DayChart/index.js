@@ -1,23 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Bar, Box, Line, Column } from '@ant-design/charts'
-import {
-  rowSelectorAtom,
-  seriesInDatasetAtom,
-  SETTINGS,
-  settingsAtom,
-} from '../../state'
-import { StepCount, StepCountForSeries } from '../StepCount'
+import { Line } from '@ant-design/charts'
+import { rowSelectorAtom, seriesInDatasetAtom, SETTINGS } from '../../state'
+import { StepCount } from '../StepCount'
 import {
   colorForSeries,
-  downloadJson,
   downloadWithSplitSeries,
   totalSteps,
 } from '../../utils'
 import { Button } from 'antd'
 import { useRef } from 'react'
 import theme from '../../../shared/theme'
-import annotationForRange from './annotation'
 import { useAtom } from 'jotai'
 
 const color = (series, seriesList) => {
@@ -49,43 +42,43 @@ const ButtonContainer = styled.div`
   }
 `
 
-const ColumnChart = ({ baseConfig, seriesList }) => {
-  const config = {
-    ...baseConfig,
-    xField: 'hour',
-    yField: 'value',
-    seriesField: 'series',
-    isGroup: true,
-    color: ({ series }) => color(series, seriesList),
-  }
+// const ColumnChart = ({ baseConfig, seriesList }) => {
+//   const config = {
+//     ...baseConfig,
+//     xField: 'hour',
+//     yField: 'value',
+//     seriesField: 'series',
+//     isGroup: true,
+//     color: ({ series }) => color(series, seriesList),
+//   }
 
-  return <Column {...config} />
-}
+//   return <Column {...config} />
+// }
 
-const BoxChart = ({ baseConfig, parentRef }) => {
-  const config = {
-    ...baseConfig,
-    groupField: 'series',
-    xField: 'hour',
-    yField: ['q10', 'q25', 'median', 'q75', 'q90'],
-    // boxStyle: {
-    //   stroke: '#545454',
-    //   fill: ['#1890FF', '#ffa'],
-    //   fillOpacity: 0.3,
-    // },
-  }
+// const BoxChart = ({ baseConfig, parentRef }) => {
+//   const config = {
+//     ...baseConfig,
+//     groupField: 'series',
+//     xField: 'hour',
+//     yField: ['q10', 'q25', 'median', 'q75', 'q90'],
+//     // boxStyle: {
+//     //   stroke: '#545454',
+//     //   fill: ['#1890FF', '#ffa'],
+//     //   fillOpacity: 0.3,
+//     // },
+//   }
 
-  return (
-    <Box
-      {...config}
-      theme={theme}
-      style={{ width: '100%', backgroundColor: 'white' }}
-      onReady={(plot) => {
-        parentRef.current = plot
-      }}
-    />
-  )
-}
+//   return (
+//     <Box
+//       {...config}
+//       theme={theme}
+//       style={{ width: '100%', backgroundColor: 'white' }}
+//       onReady={(plot) => {
+//         parentRef.current = plot
+//       }}
+//     />
+//   )
+// }
 
 const LineChart = ({ baseConfig, seriesList, parentRef }) => {
   const config = {
@@ -113,7 +106,6 @@ const DayChart = ({ passedRef }) => {
   const ref = useRef()
   const [dataset] = useAtom(rowSelectorAtom)
   const [seriesList] = useAtom(seriesInDatasetAtom)
-  const [settings] = useAtom(settingsAtom)
 
   const data = [...dataset.rows]
     .sort((a, b) => parseInt(a.hour) - parseInt(b.hour))

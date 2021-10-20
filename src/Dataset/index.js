@@ -1,19 +1,14 @@
-import { Button } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router'
 import { useAtom } from 'jotai'
 import styled from 'styled-components'
 import { useDataset } from './api'
-import BeforeAfterScatter from './components/BeforeAfterScatter'
 import CurrentUser from './components/CurrentUser'
 import DayChart from './components/DayChart'
-import DiffChart from './components/DiffChart'
 import Filter from './components/Filter'
-import Occupations from './components/Occupations'
-import SeriesTotalOverTime from './components/SeriesTotalOverTime'
 import SeriesWithCount from './components/SeriesWithCount'
 import Settings from './components/Settings'
-import { datasetAverageAtom, filteredDatasetAtom } from './state'
+import { filteredDatasetAtom } from './state'
 
 const Container = styled.div`
   width: 100%;
@@ -36,10 +31,6 @@ const SidePanel = styled.div`
   margin: 1rem;
   display: flex;
   flex-direction: column;
-`
-
-const Grid = styled.div`
-  display: grid;
 `
 
 const UserCount = () => {

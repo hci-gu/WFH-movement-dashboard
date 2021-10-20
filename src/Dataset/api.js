@@ -52,7 +52,7 @@ export const useFixedDataset = (id) => {
       setDataset(rows)
     }
     getRows()
-  }, [setDataset])
+  }, [id, setDataset])
 
   return dataset
 }
