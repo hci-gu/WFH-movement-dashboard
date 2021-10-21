@@ -1,11 +1,11 @@
 import React, { useRef } from 'react'
 
-import { Mix, G2 } from '@ant-design/charts'
+import { Mix, G2, Scatter } from '@ant-design/charts'
 
 import { filteredDatasetAtom } from '../state'
 import { useAtom } from 'jotai'
 
-const BeforeAfterScatter = () => {
+const BeforeAfterScatterMix = () => {
   const ref = useRef()
   const [data] = useAtom(filteredDatasetAtom)
 
@@ -32,13 +32,13 @@ const BeforeAfterScatter = () => {
       {
         trigger: 'plot:mousedown',
         isEnable: function isEnable(context) {
-          console.log(ref.current)
-          setTimeout(() => {
-            console.log(ref.current.chart.views[0])
-            ref.current.chart.views.forEach((view, i) => {
-              console.log(`view:${i}`, view.filterData(view.getData()))
-            })
-          }, 100)
+          // console.log(ref.current)
+          // setTimeout(() => {
+          //   console.log(ref.current.chart.views[0])
+          //   ref.current.chart.views.forEach((view, i) => {
+          //     console.log(`view:${i}`, view.filterData(view.getData()))
+          //   })
+          // }, 100)
           return !context.isInShape('mask')
         },
         action: ['rect-mask:start', 'rect-mask:show'],
@@ -158,6 +158,42 @@ const BeforeAfterScatter = () => {
       }}
     />
   )
+}
+
+const BeforeAfterScatter = () => {
+  const [data] = useAtom(filteredDatasetAtom)
+
+  const config = {
+    appendPadding: 50,
+    height: 800,
+    data: data.rows,
+    xField: 'after',
+    yField: 'before',
+    // colorField: 'education',
+    // size: [2, 16],
+    shape: 'dot',
+    yAxis: {
+      nice: true,
+    },
+    legend: { position: 'top' },
+    xAxis: {
+      nice: true,
+    },
+    annotations: [
+      {
+        type: 'text',
+        position: ['20000', '-2500'],
+        content: `steps before`,
+      },
+      {
+        type: 'text',
+        position: ['-2500', '25000'],
+        content: `steps after`,
+        rotate: -Math.PI / 2,
+      },
+    ],
+  }
+  return <Scatter {...config} />
 }
 
 export default BeforeAfterScatter

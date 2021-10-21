@@ -196,42 +196,43 @@ const runAnalysis = (users, settings) => {
     //   ageRange: age,
     //   ...analyse(dataUsers.filter(({ ageRange }) => ageRange === age)),
     // }))
-    const allMale = {
-      gender: 'Male',
-      ageRange: 'all',
-      ...analyse(
-        dataUsers.filter(({ gender }) => gender === 'Male'),
-        !!settings.fixedWFHDate
-      ),
-    }
-    const male = ages.map((age) => ({
-      gender: 'Male',
-      ageRange: age,
-      ...analyse(
-        dataUsers.filter(
-          ({ ageRange, gender }) => ageRange === age && gender === 'Male'
-        )
-      ),
-    }))
-    const allFemale = {
-      gender: 'Female',
-      ageRange: 'all',
-      ...analyse(
-        dataUsers.filter(({ gender }) => gender === 'Female'),
-        !!settings.fixedWFHDate
-      ),
-    }
-    const female = ages.map((age) => ({
-      gender: 'Female',
-      ageRange: age,
-      ...analyse(
-        dataUsers.filter(
-          ({ ageRange, gender }) => ageRange === age && gender === 'Female'
-        )
-      ),
-    }))
+    // const allMale = {
+    //   gender: 'Male',
+    //   ageRange: 'all',
+    //   ...analyse(
+    //     dataUsers.filter(({ gender }) => gender === 'Male'),
+    //     !!settings.fixedWFHDate
+    //   ),
+    // }
+    // const male = ages.map((age) => ({
+    //   gender: 'Male',
+    //   ageRange: age,
+    //   ...analyse(
+    //     dataUsers.filter(
+    //       ({ ageRange, gender }) => ageRange === age && gender === 'Male'
+    //     )
+    //   ),
+    // }))
+    // const allFemale = {
+    //   gender: 'Female',
+    //   ageRange: 'all',
+    //   ...analyse(
+    //     dataUsers.filter(({ gender }) => gender === 'Female'),
+    //     !!settings.fixedWFHDate
+    //   ),
+    // }
+    // const female = ages.map((age) => ({
+    //   gender: 'Female',
+    //   ageRange: age,
+    //   ...analyse(
+    //     dataUsers.filter(
+    //       ({ ageRange, gender }) => ageRange === age && gender === 'Female'
+    //     )
+    //   ),
+    // }))
 
-    resolve([dataUsers, [all, allMale, ...male, allFemale, ...female]])
+    resolve([dataUsers, [all]])
+    // resolve([dataUsers, [all, allMale, ...male, allFemale, ...female]])
   })
 }
 

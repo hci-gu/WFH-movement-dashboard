@@ -71,7 +71,7 @@ export const totalValue = (hours) =>
 export const diffForHours = (hours) => {
   const before = totalValue(hours.filter((row) => row.series === 'before'))
   const after = totalValue(hours.filter((row) => row.series === 'after'))
-  const percentChange = -((1 - after / before) * 100)
+  const percentChange = -(1 - after / before)
 
   return {
     before,

@@ -33,7 +33,6 @@ export const useDataset = () => {
     if (!id) return
     const getRows = async () => {
       const rows = await getAllRows(id)
-      console.log(rows)
       setDataset(rows)
     }
     getRows()

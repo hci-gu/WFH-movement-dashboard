@@ -9,6 +9,9 @@ import Filter from './components/Filter'
 import SeriesWithCount from './components/SeriesWithCount'
 import Settings from './components/Settings'
 import { filteredDatasetAtom } from './state'
+import BeforeAfterScatter from './components/BeforeAfterScatter'
+import EstimationPlot from './components/EstimationPlot'
+import WidgetSelect, { widgetAtom } from './components/WidgetSelect'
 
 const Container = styled.div`
   width: 100%;
@@ -44,9 +47,21 @@ const UserCount = () => {
   )
 }
 
+const WidgetSelector = () => {
+  const [widget] = useAtom(widgetAtom)
+
+  switch (widget) {
+    case 'DayChart':
+      return <DayChart />
+    case 'EstimationPlot':
+      return <EstimationPlot />
+    default:
+      return null
+  }
+}
+
 function App() {
   const dataset = useDataset()
-  console.log('dataset', dataset)
 
   return (
     <Container>
@@ -61,14 +76,17 @@ function App() {
         <CurrentUser />
       </SidePanel>
       <div>
-        <DayChart />
-        <br></br>
+        <WidgetSelect />
+        <WidgetSelector />
+        {/* <DayChart />
+        <br></br> */}
         {/* <SeriesTotalOverTime />
         <br></br> */}
         {/* <DiffChart /> */}
-        <br></br>
-        {/* <BeforeAfterScatter />
+        {/* <br></br>
+        <BeforeAfterScatter />
         <br></br> */}
+        <br></br>
         {/* <Occupations /> */}
       </div>
     </Container>

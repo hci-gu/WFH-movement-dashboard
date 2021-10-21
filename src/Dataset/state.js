@@ -3,6 +3,7 @@ import ttest from 'ttest'
 import { atom } from 'jotai'
 
 import { diffForHours, getMedian, occupationKey, totalValue } from './utils'
+import calcMedian from './utils/median'
 
 export const SETTINGS = {
   num_series: 2,
@@ -44,7 +45,7 @@ export const filteredDatasetAtom = atom((get) => {
       }
       return u
     })
-    // .filter((u) => u.before !== 0 && u.after !== 0)
+    .filter((u) => u.diff <= 5)
     // .filter((u) => u.before <= 10000 && u.after <= 10000)
     .filter((u) => {
       return Object.keys(filters).every((key) => {
@@ -187,4 +188,53 @@ export const occupationsSelectorAtom = atom((get) => {
     name: key,
     value: occupationsMap[key],
   }))
+})
+
+export const medianEstimationAtom = atom((get) => {
+  const dataset = get(filteredDatasetAtom)
+
+  const estimates = dataset.rows.map((r) => r.stepsEstimate)
+  const diffs = dataset.rows.map((r) => r.diff)
+
+  return {
+    stepsEstimate: calcMedian(estimates).median,
+    diff: calcMedian(diffs).median,
+  }
+})
+
+export const medianEstimatesAtom = atom((get) => {
+  const dataset = get(filteredDatasetAtom)
+  const list = [
+    // {
+    //   name: 'everyone',
+    //   filter: () => true,
+    // },
+    // {
+    //   name: 'Male',
+    //   filter: ({ gender }) => gender === 'Male',
+    // },
+    // {
+    //   name: 'Female',
+    //   filter: ({ gender }) => gender === 'Female',
+    // },
+    ...['18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75-84'].map(
+      (name) => ({
+        name,
+        filter: ({ ageRange }) => ageRange === name,
+      })
+    ),
+  ]
+
+  return list.map(({ name, filter }) => {
+    const data = dataset.rows.filter(filter)
+
+    const estimates = data.map((r) => r.stepsEstimate)
+    const diffs = data.map((r) => r.diff)
+    return {
+      name,
+      count: data.length,
+      stepsEstimate: calcMedian(estimates).median,
+      change: calcMedian(diffs).median,
+    }
+  })
 })
